@@ -1,0 +1,9 @@
+netconvert --node-files=MyNodes.nod.xml --edge-files=MyEdges.edg.xml \
+  --connection-files=MyConnections.con.xml --type-files=MyTypes.typ.xml \
+  --tllogic-files --output-file=MySUMONet.net.xml
+
+https://github.com/eclipse/sumo/blob/main/docs/web/docs/Networks/PlainXML.md
+
+netconvert --node-files=files/network/node/hello.nod.xml --edge-files=files/network/edge/hello.edg.xml --output-file=files/network/hello.net.xml
+
+netconvert --node-files=files/network/node/test.nod.xml --edge-files=files/network/edge/test.edg.xml --connection-files=files/network/connection/test.con.xml --output-file=files/network/test.net.xml

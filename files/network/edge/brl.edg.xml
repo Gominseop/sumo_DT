@@ -1,0 +1,37 @@
+<edges>
+   <edge id="0_0i" from="0_0" to="0" numLanes="2" speed="20.000000" />
+   <edge id="0_0o" from="0" to="0_0" numLanes="2" speed="20.000000" />
+
+   <edge id="0_1i" from="0_1" to="0" numLanes="2" speed="20.000000" />
+   <edge id="0_1o" from="0" to="0_1" numLanes="2" speed="20.000000" />
+
+   <edge id="0_2i" from="0_2" to="0" numLanes="2" speed="20.000000" />
+   <edge id="0_2o" from="0" to="0_2" numLanes="2" speed="20.000000" />
+
+   <edge id="0_3i" from="0_3" to="0" numLanes="2" speed="20.000000" />
+   <edge id="0_3o" from="0" to="0_3" numLanes="2" speed="20.000000" />
+
+   <edge id="1i" from="1" to="0_0" numLanes="2" speed="20.000000" />
+   <edge id="1o" from="0_0" to="1" numLanes="2" speed="20.000000" />
+
+   <edge id="2i" from="2" to="0_1" numLanes="2" speed="20.000000" />
+   <edge id="2o" from="0_1" to="2" numLanes="2" speed="20.000000" />
+
+   <edge id="3i" from="3" to="0_2" numLanes="2" speed="20.000000" />
+   <edge id="3o" from="0_2" to="3" numLanes="2" speed="20.000000" />
+
+   <edge id="4i" from="4" to="0_3" numLanes="2" speed="20.000000" />
+   <edge id="4o" from="0_3" to="4" numLanes="2" speed="20.000000" />
+
+   <edge id="51i" from="1" to="51" numLanes="1" speed="20.000" />
+   <edge id="51o" from="51" to="1" numLanes="1" speed="20.000" />
+
+   <edge id="52i" from="2" to="52" numLanes="1" speed="20.000" />
+   <edge id="52o" from="52" to="2" numLanes="1" speed="20.000" />
+
+   <edge id="53i" from="3" to="53" numLanes="1" speed="20.000" />
+   <edge id="53o" from="53" to="3" numLanes="1" speed="20.000" />
+
+   <edge id="54i" from="4" to="54" numLanes="1" speed="20.000" />
+   <edge id="54o" from="54" to="4" numLanes="1" speed="20.000" />
+</edges>

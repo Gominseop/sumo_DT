@@ -1,0 +1,2 @@
+    <node id="integer" x="+-0" y="+-0" type="priority, traffic_light_right_on_red" tltype="static" tlLatout="incoming" tl=""/>
+    <node id="integer" x="+-0" y="+-0" type="zipper, left_before_right" />

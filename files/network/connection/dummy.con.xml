@@ -1,0 +1,21 @@
+<connections>
+    <connection from="0_0i" to="0_3o" fromLane="0" toLane="0"/>
+    <connection from="0_0i" to="0_2o" fromLane="0" toLane="1"/>
+    <connection from="0_0i" to="0_2o" fromLane="1" toLane="0"/>
+    <connection from="0_0i" to="0_1o" fromLane="1" toLane="1"/>
+
+    <connection from="0_1i" to="0_0o" fromLane="0" toLane="0"/>
+    <connection from="0_1i" to="0_3o" fromLane="0" toLane="1"/>
+    <connection from="0_1i" to="0_3o" fromLane="1" toLane="0"/>
+    <connection from="0_1i" to="0_2o" fromLane="1" toLane="1"/>
+
+    <connection from="0_2i" to="0_1o" fromLane="0" toLane="0"/>
+    <connection from="0_2i" to="0_0o" fromLane="0" toLane="1"/>
+    <connection from="0_2i" to="0_0o" fromLane="1" toLane="0"/>
+    <connection from="0_2i" to="0_3o" fromLane="1" toLane="1"/>
+
+    <connection from="0_3i" to="0_2o" fromLane="0" toLane="0"/>
+    <connection from="0_3i" to="0_1o" fromLane="0" toLane="1"/>
+    <connection from="0_3i" to="0_1o" fromLane="1" toLane="0"/>
+    <connection from="0_3i" to="0_0o" fromLane="1" toLane="1"/>
+</connections>
