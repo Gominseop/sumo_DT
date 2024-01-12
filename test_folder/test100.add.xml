@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='utf-8'?>
+<additional>
+  <laneData id="test" file="C:/Users/FILAB/Desktop/arrange/5_code/SUMO/sumo_DT/test_folder/test100_lane_test.xml" period="50" end="600" />
+  <timedEvent type="SaveTLSProgram" source="test_tll_00" dest="C:/Users/FILAB/Desktop/arrange/5_code/SUMO/sumo_DT/test_folder/test100_tls_program_test_tll_00.xml" />
+  <timedEvent type="SaveTLSSwitchTimes" source="test_tll_00" dest="C:/Users/FILAB/Desktop/arrange/5_code/SUMO/sumo_DT/test_folder/test100_tls_switch_time_test_tll_00.xml" />
+  <timedEvent type="SaveTLSSwitchStates" source="test_tll_00" dest="C:/Users/FILAB/Desktop/arrange/5_code/SUMO/sumo_DT/test_folder/test100_tls_switch_state_test_tll_00.xml" />
+  <timedEvent type="SaveTLSStates" source="test_tll_00" dest="C:/Users/FILAB/Desktop/arrange/5_code/SUMO/sumo_DT/test_folder/test100_tls_state_test_tll_00.xml" />
+  <edgeData id="test" file="C:/Users/FILAB/Desktop/arrange/5_code/SUMO/sumo_DT/test_folder/test100_edge_test.xml" period="50" end="600" />
+</additional>

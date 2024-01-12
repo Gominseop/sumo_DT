@@ -1,0 +1,16 @@
+<configuration>
+   <input>
+      <net-file value="test2.net.xml"/>
+      <route-files value="pangyo.rou.xml"/>
+      <additional-files value="test2.add.xml"/>
+   </input>
+   <output>
+      <summary-output value="test_summary.xml"/>
+      <queue-output value="test_queue.xml"/>
+      <queue-output.period value="10"/>
+   </output>
+   <time>
+      <begin value="0"/>
+      <end value="3600"/>
+   </time>
+</configuration>

@@ -1,0 +1,17 @@
+<configuration>
+   <input>
+      <net-file value="C:/Users/FILAB/Desktop/arrange/5_code/SUMO/sumo_DT/test_folder/test100.net.xml"/>
+      <route-files value="C:/Users/FILAB/Desktop/arrange/5_code/SUMO/sumo_DT/test_folder/test100.rou.xml"/>
+      <additional-files value="C:/Users/FILAB/Desktop/arrange/5_code/SUMO/sumo_DT/test_folder/test100.add.xml"/>
+   </input>
+   <output>
+      <summary-output value="C:/Users/FILAB/Desktop/arrange/5_code/SUMO/sumo_DT/test_folder/test100_summary.xml"/>
+      <summary-output.period value="50"/>
+      <queue-output value="C:/Users/FILAB/Desktop/arrange/5_code/SUMO/sumo_DT/test_folder/test100_queue.xml"/>
+      <queue-output.period value="50"/>
+   </output>
+   <time>
+      <begin value="0"/>
+      <end value="600"/>
+   </time>
+</configuration>

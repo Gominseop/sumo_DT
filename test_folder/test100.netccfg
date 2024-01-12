@@ -1,0 +1,16 @@
+<configuration>
+   <input>
+      <node-files value="C:/Users/FILAB/Desktop/arrange/5_code/SUMO/sumo_DT/test_folder/test100.nod.xml"/>
+      <edge-files value="C:/Users/FILAB/Desktop/arrange/5_code/SUMO/sumo_DT/test_folder/test100.edg.xml"/>
+      <connection-files value="C:/Users/FILAB/Desktop/arrange/5_code/SUMO/sumo_DT/test_folder/test100.con.xml"/>
+      <tllogic-files value="C:/Users/FILAB/Desktop/arrange/5_code/SUMO/sumo_DT/test_folder/test100.tll.xml"/>
+   </input>
+
+   <output>
+      <output-file value="C:/Users/FILAB/Desktop/arrange/5_code/SUMO/sumo_DT/test_folder/test100.net.xml"/>
+   </output>
+
+   <report>
+      <verbose value="true"/>
+   </report>
+</configuration>

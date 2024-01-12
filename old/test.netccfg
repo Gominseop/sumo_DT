@@ -1,0 +1,16 @@
+<configuration>
+   <input>
+      <node-files value="test_node.nod.xml"/>
+      <edge-files value="test_edge.edg.xml"/>
+      <connection-files value="test_connection.con.xml"/>
+      <tllogic-files value="test_tllogic.tll.xml"/>
+   </input>
+
+   <output>
+      <output-file value="test_network.net.xml"/>
+   </output>
+
+   <report>
+      <verbose value="true"/>
+   </report>
+</configuration>

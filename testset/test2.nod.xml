@@ -1,0 +1,30 @@
+<nodes>
+   <node id="0" x="-650.000000" y="1600.000000" type="traffic_light_right_on_red" tl="0"/>
+   <node id="0_0" x="-650.000000" y="1690.000000" type="priority"/>
+   <node id="0_1" x="-650.000000" y="1425.000000" type="priority"/>
+   <node id="0_2" x="-750.000000" y="1600.000000" type="priority"/>
+
+   <node id="1" x="-192.000000" y="778.000000" type="traffic_light_right_on_red" tl="1"/>
+   <node id="1_0" x="-192.000000" y="878.000000" type="priority"/>
+   <node id="1_1" x="-56.000000" y="778.000000" type="priority"/>
+   <node id="1_2" x="-192.000000" y="678.000000" type="priority"/>
+   <node id="1_3" x="-322.000000" y="778.000000" type="priority"/>
+
+   <node id="2" x="0.000000" y="0.000000" type="traffic_light_right_on_red" tl="2"/>
+   <node id="2_0" x="0.000000" y="100.000000" type="priority"/>
+   <node id="2_1" x="100.000000" y="0.000000" type="priority"/>
+   <node id="2_2" x="0.000000" y="-70.000000" type="priority"/>
+
+   <node id="3" x="535.000000" y="0.000000" type="traffic_light_right_on_red" tl="3"/>
+   <node id="3_0" x="535.000000" y="100.000000" type="priority"/>
+   <node id="3_1" x="585.000000" y="0.000000" type="priority"/>
+   <node id="3_2" x="535.000000" y="-130.000000" type="priority"/>
+   <node id="3_3" x="435.000000" y="0.000000" type="priority"/>
+
+   <node id="4" x="535.000000" y="778.000000" type="traffic_light_right_on_red" tl="4"/>
+   <node id="4_0" x="535.000000" y="858.000000" type="priority"/>
+   <node id="4_1" x="615.000000" y="778.000000" type="priority"/>
+   <node id="4_2" x="535.000000" y="678.000000" type="priority"/>
+   <node id="4_3" x="435.000000" y="778.000000" type="priority"/>
+
+</nodes>

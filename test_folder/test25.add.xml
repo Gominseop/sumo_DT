@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='utf-8'?>
+<additional>
+  <edgeData id="test" file="C:/Users/FILAB/Desktop/arrange/5_code/SUMO/sumo_DT/test_folder/test25_edge_test25.xml" period="100" end="3600" />
+  <timeEvent type="SaveTLLSwitchStates" source="test_tll_00" dest="C:/Users/FILAB/Desktop/arrange/5_code/SUMO/sumo_DT/test_folder/test25_tls_switch_state_test_tll_00.xml" />
+  <timeEvent type="SaveTLLSwitchTimes" source="test_tll_00" dest="C:/Users/FILAB/Desktop/arrange/5_code/SUMO/sumo_DT/test_folder/test25_tls_switch_time_test_tll_00.xml" />
+</additional>

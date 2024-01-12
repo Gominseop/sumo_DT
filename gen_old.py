@@ -118,7 +118,7 @@ if __name__ == "__main__":
     print("cross_traffic_end", cross_traffic_end, '\n')
 
     # tllogic generate
-    with open(f"files/network/tllogic/brl.tll.xml", "w") as tll:
+    with open(f"files/network/tllogic/brl2.tll.xml", "w") as tll:
         tll.write(f'<tlLogic id="{tll_data[0]}" type="{tll_data[2]}" programID="{tll_data[1]}" offset="0">\n')
 
         _phase_num = tll_data[3]
@@ -141,7 +141,7 @@ if __name__ == "__main__":
         tll.write('</tlLogic>')
 
     # node generate
-    with open(f"files/network/node/brl.nod.xml", "w") as nod:
+    with open(f"files/network/node/brl2.nod.xml", "w") as nod:
         nod.write(f'<nodes>\n')
         # cross node
         if "traffic" in cross_data[4]:
@@ -181,7 +181,7 @@ if __name__ == "__main__":
     road_data = cursor.fetchall()
     print('road_data', road_data, '\n')
 
-    with open(f"files/network/edge/brl.edg.xml", "w") as edg:
+    with open(f"files/network/edge/brl2.edg.xml", "w") as edg:
         edg.write('<edges>\n')
         # connect around node
         for rd in road_data:
@@ -206,7 +206,7 @@ if __name__ == "__main__":
         edg.write('</edges>')
 
     # connection generate
-    with open(f"files/network/connection/brl.con.xml", "w") as con:
+    with open(f"files/network/connection/brl2.con.xml", "w") as con:
         con.write('<connections>\n')
 
         toLaneNum = dict()

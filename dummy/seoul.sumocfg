@@ -1,0 +1,12 @@
+<configuration>
+   <input>
+      <net-file value="seoul.net.xml"/>
+      <route-files value="seoul.rou.xml"/>
+   </input>
+   <output>
+   </output>
+   <time>
+      <begin value="0"/>
+      <end value="600"/>
+   </time>
+</configuration>

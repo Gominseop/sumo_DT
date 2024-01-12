@@ -1,0 +1,252 @@
+<tlLogics>
+   <tlLogic id="test_tll_00" type="static" programID="tll_test_00" offset="0">
+      <phase duration="40" state="sGGGsrrrsrrrsrrr"/>
+      <phase duration="4" state="syyysrrrsrrrsrrr"/>
+      <phase duration="40" state="srrrsGGGsrrrsrrr"/>
+      <phase duration="4" state="srrrsyyysrrrsrrr"/>
+      <phase duration="40" state="srrrsrrrsGGGsrrr"/>
+      <phase duration="4" state="srrrsrrrsyyysrrr"/>
+      <phase duration="40" state="srrrsrrrsrrrsGGG"/>
+      <phase duration="4" state="srrrsrrrsrrrsyyy"/>
+   </tlLogic>
+   <tlLogic id="test_tll_01" type="static" programID="tll_test_01" offset="4">
+      <phase duration="40" state="sGGGsrrrsrrrsrrr"/>
+      <phase duration="4" state="syyysrrrsrrrsrrr"/>
+      <phase duration="40" state="srrrsGGGsrrrsrrr"/>
+      <phase duration="4" state="srrrsyyysrrrsrrr"/>
+      <phase duration="40" state="srrrsrrrsGGGsrrr"/>
+      <phase duration="4" state="srrrsrrrsyyysrrr"/>
+      <phase duration="40" state="srrrsrrrsrrrsGGG"/>
+      <phase duration="4" state="srrrsrrrsrrrsyyy"/>
+   </tlLogic>
+   <tlLogic id="test_tll_02" type="static" programID="tll_test_02" offset="8">
+      <phase duration="40" state="sGGGsrrrsrrrsrrr"/>
+      <phase duration="4" state="syyysrrrsrrrsrrr"/>
+      <phase duration="40" state="srrrsGGGsrrrsrrr"/>
+      <phase duration="4" state="srrrsyyysrrrsrrr"/>
+      <phase duration="40" state="srrrsrrrsGGGsrrr"/>
+      <phase duration="4" state="srrrsrrrsyyysrrr"/>
+      <phase duration="40" state="srrrsrrrsrrrsGGG"/>
+      <phase duration="4" state="srrrsrrrsrrrsyyy"/>
+   </tlLogic>
+   <tlLogic id="test_tll_03" type="static" programID="tll_test_03" offset="12">
+      <phase duration="40" state="sGGGsrrrsrrrsrrr"/>
+      <phase duration="4" state="syyysrrrsrrrsrrr"/>
+      <phase duration="40" state="srrrsGGGsrrrsrrr"/>
+      <phase duration="4" state="srrrsyyysrrrsrrr"/>
+      <phase duration="40" state="srrrsrrrsGGGsrrr"/>
+      <phase duration="4" state="srrrsrrrsyyysrrr"/>
+      <phase duration="40" state="srrrsrrrsrrrsGGG"/>
+      <phase duration="4" state="srrrsrrrsrrrsyyy"/>
+   </tlLogic>
+   <tlLogic id="test_tll_04" type="static" programID="tll_test_04" offset="16">
+      <phase duration="40" state="sGGGsrrrsrrrsrrr"/>
+      <phase duration="4" state="syyysrrrsrrrsrrr"/>
+      <phase duration="40" state="srrrsGGGsrrrsrrr"/>
+      <phase duration="4" state="srrrsyyysrrrsrrr"/>
+      <phase duration="40" state="srrrsrrrsGGGsrrr"/>
+      <phase duration="4" state="srrrsrrrsyyysrrr"/>
+      <phase duration="40" state="srrrsrrrsrrrsGGG"/>
+      <phase duration="4" state="srrrsrrrsrrrsyyy"/>
+   </tlLogic>
+   <tlLogic id="test_tll_10" type="static" programID="tll_test_10" offset="4">
+      <phase duration="40" state="sGGGsrrrsrrrsrrr"/>
+      <phase duration="4" state="syyysrrrsrrrsrrr"/>
+      <phase duration="40" state="srrrsGGGsrrrsrrr"/>
+      <phase duration="4" state="srrrsyyysrrrsrrr"/>
+      <phase duration="40" state="srrrsrrrsGGGsrrr"/>
+      <phase duration="4" state="srrrsrrrsyyysrrr"/>
+      <phase duration="40" state="srrrsrrrsrrrsGGG"/>
+      <phase duration="4" state="srrrsrrrsrrrsyyy"/>
+   </tlLogic>
+   <tlLogic id="test_tll_11" type="static" programID="tll_test_11" offset="8">
+      <phase duration="40" state="sGGGsrrrsrrrsrrr"/>
+      <phase duration="4" state="syyysrrrsrrrsrrr"/>
+      <phase duration="40" state="srrrsGGGsrrrsrrr"/>
+      <phase duration="4" state="srrrsyyysrrrsrrr"/>
+      <phase duration="40" state="srrrsrrrsGGGsrrr"/>
+      <phase duration="4" state="srrrsrrrsyyysrrr"/>
+      <phase duration="40" state="srrrsrrrsrrrsGGG"/>
+      <phase duration="4" state="srrrsrrrsrrrsyyy"/>
+   </tlLogic>
+   <tlLogic id="test_tll_12" type="static" programID="tll_test_12" offset="12">
+      <phase duration="40" state="sGGGsrrrsrrrsrrr"/>
+      <phase duration="4" state="syyysrrrsrrrsrrr"/>
+      <phase duration="40" state="srrrsGGGsrrrsrrr"/>
+      <phase duration="4" state="srrrsyyysrrrsrrr"/>
+      <phase duration="40" state="srrrsrrrsGGGsrrr"/>
+      <phase duration="4" state="srrrsrrrsyyysrrr"/>
+      <phase duration="40" state="srrrsrrrsrrrsGGG"/>
+      <phase duration="4" state="srrrsrrrsrrrsyyy"/>
+   </tlLogic>
+   <tlLogic id="test_tll_13" type="static" programID="tll_test_13" offset="16">
+      <phase duration="40" state="sGGGsrrrsrrrsrrr"/>
+      <phase duration="4" state="syyysrrrsrrrsrrr"/>
+      <phase duration="40" state="srrrsGGGsrrrsrrr"/>
+      <phase duration="4" state="srrrsyyysrrrsrrr"/>
+      <phase duration="40" state="srrrsrrrsGGGsrrr"/>
+      <phase duration="4" state="srrrsrrrsyyysrrr"/>
+      <phase duration="40" state="srrrsrrrsrrrsGGG"/>
+      <phase duration="4" state="srrrsrrrsrrrsyyy"/>
+   </tlLogic>
+   <tlLogic id="test_tll_14" type="static" programID="tll_test_14" offset="20">
+      <phase duration="40" state="sGGGsrrrsrrrsrrr"/>
+      <phase duration="4" state="syyysrrrsrrrsrrr"/>
+      <phase duration="40" state="srrrsGGGsrrrsrrr"/>
+      <phase duration="4" state="srrrsyyysrrrsrrr"/>
+      <phase duration="40" state="srrrsrrrsGGGsrrr"/>
+      <phase duration="4" state="srrrsrrrsyyysrrr"/>
+      <phase duration="40" state="srrrsrrrsrrrsGGG"/>
+      <phase duration="4" state="srrrsrrrsrrrsyyy"/>
+   </tlLogic>
+   <tlLogic id="test_tll_20" type="static" programID="tll_test_20" offset="8">
+      <phase duration="40" state="sGGGsrrrsrrrsrrr"/>
+      <phase duration="4" state="syyysrrrsrrrsrrr"/>
+      <phase duration="40" state="srrrsGGGsrrrsrrr"/>
+      <phase duration="4" state="srrrsyyysrrrsrrr"/>
+      <phase duration="40" state="srrrsrrrsGGGsrrr"/>
+      <phase duration="4" state="srrrsrrrsyyysrrr"/>
+      <phase duration="40" state="srrrsrrrsrrrsGGG"/>
+      <phase duration="4" state="srrrsrrrsrrrsyyy"/>
+   </tlLogic>
+   <tlLogic id="test_tll_21" type="static" programID="tll_test_21" offset="12">
+      <phase duration="40" state="sGGGsrrrsrrrsrrr"/>
+      <phase duration="4" state="syyysrrrsrrrsrrr"/>
+      <phase duration="40" state="srrrsGGGsrrrsrrr"/>
+      <phase duration="4" state="srrrsyyysrrrsrrr"/>
+      <phase duration="40" state="srrrsrrrsGGGsrrr"/>
+      <phase duration="4" state="srrrsrrrsyyysrrr"/>
+      <phase duration="40" state="srrrsrrrsrrrsGGG"/>
+      <phase duration="4" state="srrrsrrrsrrrsyyy"/>
+   </tlLogic>
+   <tlLogic id="test_tll_22" type="static" programID="tll_test_22" offset="16">
+      <phase duration="40" state="sGGGsrrrsrrrsrrr"/>
+      <phase duration="4" state="syyysrrrsrrrsrrr"/>
+      <phase duration="40" state="srrrsGGGsrrrsrrr"/>
+      <phase duration="4" state="srrrsyyysrrrsrrr"/>
+      <phase duration="40" state="srrrsrrrsGGGsrrr"/>
+      <phase duration="4" state="srrrsrrrsyyysrrr"/>
+      <phase duration="40" state="srrrsrrrsrrrsGGG"/>
+      <phase duration="4" state="srrrsrrrsrrrsyyy"/>
+   </tlLogic>
+   <tlLogic id="test_tll_23" type="static" programID="tll_test_23" offset="20">
+      <phase duration="40" state="sGGGsrrrsrrrsrrr"/>
+      <phase duration="4" state="syyysrrrsrrrsrrr"/>
+      <phase duration="40" state="srrrsGGGsrrrsrrr"/>
+      <phase duration="4" state="srrrsyyysrrrsrrr"/>
+      <phase duration="40" state="srrrsrrrsGGGsrrr"/>
+      <phase duration="4" state="srrrsrrrsyyysrrr"/>
+      <phase duration="40" state="srrrsrrrsrrrsGGG"/>
+      <phase duration="4" state="srrrsrrrsrrrsyyy"/>
+   </tlLogic>
+   <tlLogic id="test_tll_24" type="static" programID="tll_test_24" offset="24">
+      <phase duration="40" state="sGGGsrrrsrrrsrrr"/>
+      <phase duration="4" state="syyysrrrsrrrsrrr"/>
+      <phase duration="40" state="srrrsGGGsrrrsrrr"/>
+      <phase duration="4" state="srrrsyyysrrrsrrr"/>
+      <phase duration="40" state="srrrsrrrsGGGsrrr"/>
+      <phase duration="4" state="srrrsrrrsyyysrrr"/>
+      <phase duration="40" state="srrrsrrrsrrrsGGG"/>
+      <phase duration="4" state="srrrsrrrsrrrsyyy"/>
+   </tlLogic>
+   <tlLogic id="test_tll_30" type="static" programID="tll_test_30" offset="12">
+      <phase duration="40" state="sGGGsrrrsrrrsrrr"/>
+      <phase duration="4" state="syyysrrrsrrrsrrr"/>
+      <phase duration="40" state="srrrsGGGsrrrsrrr"/>
+      <phase duration="4" state="srrrsyyysrrrsrrr"/>
+      <phase duration="40" state="srrrsrrrsGGGsrrr"/>
+      <phase duration="4" state="srrrsrrrsyyysrrr"/>
+      <phase duration="40" state="srrrsrrrsrrrsGGG"/>
+      <phase duration="4" state="srrrsrrrsrrrsyyy"/>
+   </tlLogic>
+   <tlLogic id="test_tll_31" type="static" programID="tll_test_31" offset="16">
+      <phase duration="40" state="sGGGsrrrsrrrsrrr"/>
+      <phase duration="4" state="syyysrrrsrrrsrrr"/>
+      <phase duration="40" state="srrrsGGGsrrrsrrr"/>
+      <phase duration="4" state="srrrsyyysrrrsrrr"/>
+      <phase duration="40" state="srrrsrrrsGGGsrrr"/>
+      <phase duration="4" state="srrrsrrrsyyysrrr"/>
+      <phase duration="40" state="srrrsrrrsrrrsGGG"/>
+      <phase duration="4" state="srrrsrrrsrrrsyyy"/>
+   </tlLogic>
+   <tlLogic id="test_tll_32" type="static" programID="tll_test_32" offset="20">
+      <phase duration="40" state="sGGGsrrrsrrrsrrr"/>
+      <phase duration="4" state="syyysrrrsrrrsrrr"/>
+      <phase duration="40" state="srrrsGGGsrrrsrrr"/>
+      <phase duration="4" state="srrrsyyysrrrsrrr"/>
+      <phase duration="40" state="srrrsrrrsGGGsrrr"/>
+      <phase duration="4" state="srrrsrrrsyyysrrr"/>
+      <phase duration="40" state="srrrsrrrsrrrsGGG"/>
+      <phase duration="4" state="srrrsrrrsrrrsyyy"/>
+   </tlLogic>
+   <tlLogic id="test_tll_33" type="static" programID="tll_test_33" offset="24">
+      <phase duration="40" state="sGGGsrrrsrrrsrrr"/>
+      <phase duration="4" state="syyysrrrsrrrsrrr"/>
+      <phase duration="40" state="srrrsGGGsrrrsrrr"/>
+      <phase duration="4" state="srrrsyyysrrrsrrr"/>
+      <phase duration="40" state="srrrsrrrsGGGsrrr"/>
+      <phase duration="4" state="srrrsrrrsyyysrrr"/>
+      <phase duration="40" state="srrrsrrrsrrrsGGG"/>
+      <phase duration="4" state="srrrsrrrsrrrsyyy"/>
+   </tlLogic>
+   <tlLogic id="test_tll_34" type="static" programID="tll_test_34" offset="28">
+      <phase duration="40" state="sGGGsrrrsrrrsrrr"/>
+      <phase duration="4" state="syyysrrrsrrrsrrr"/>
+      <phase duration="40" state="srrrsGGGsrrrsrrr"/>
+      <phase duration="4" state="srrrsyyysrrrsrrr"/>
+      <phase duration="40" state="srrrsrrrsGGGsrrr"/>
+      <phase duration="4" state="srrrsrrrsyyysrrr"/>
+      <phase duration="40" state="srrrsrrrsrrrsGGG"/>
+      <phase duration="4" state="srrrsrrrsrrrsyyy"/>
+   </tlLogic>
+   <tlLogic id="test_tll_40" type="static" programID="tll_test_40" offset="16">
+      <phase duration="40" state="sGGGsrrrsrrrsrrr"/>
+      <phase duration="4" state="syyysrrrsrrrsrrr"/>
+      <phase duration="40" state="srrrsGGGsrrrsrrr"/>
+      <phase duration="4" state="srrrsyyysrrrsrrr"/>
+      <phase duration="40" state="srrrsrrrsGGGsrrr"/>
+      <phase duration="4" state="srrrsrrrsyyysrrr"/>
+      <phase duration="40" state="srrrsrrrsrrrsGGG"/>
+      <phase duration="4" state="srrrsrrrsrrrsyyy"/>
+   </tlLogic>
+   <tlLogic id="test_tll_41" type="static" programID="tll_test_41" offset="20">
+      <phase duration="40" state="sGGGsrrrsrrrsrrr"/>
+      <phase duration="4" state="syyysrrrsrrrsrrr"/>
+      <phase duration="40" state="srrrsGGGsrrrsrrr"/>
+      <phase duration="4" state="srrrsyyysrrrsrrr"/>
+      <phase duration="40" state="srrrsrrrsGGGsrrr"/>
+      <phase duration="4" state="srrrsrrrsyyysrrr"/>
+      <phase duration="40" state="srrrsrrrsrrrsGGG"/>
+      <phase duration="4" state="srrrsrrrsrrrsyyy"/>
+   </tlLogic>
+   <tlLogic id="test_tll_42" type="static" programID="tll_test_42" offset="24">
+      <phase duration="40" state="sGGGsrrrsrrrsrrr"/>
+      <phase duration="4" state="syyysrrrsrrrsrrr"/>
+      <phase duration="40" state="srrrsGGGsrrrsrrr"/>
+      <phase duration="4" state="srrrsyyysrrrsrrr"/>
+      <phase duration="40" state="srrrsrrrsGGGsrrr"/>
+      <phase duration="4" state="srrrsrrrsyyysrrr"/>
+      <phase duration="40" state="srrrsrrrsrrrsGGG"/>
+      <phase duration="4" state="srrrsrrrsrrrsyyy"/>
+   </tlLogic>
+   <tlLogic id="test_tll_43" type="static" programID="tll_test_43" offset="28">
+      <phase duration="40" state="sGGGsrrrsrrrsrrr"/>
+      <phase duration="4" state="syyysrrrsrrrsrrr"/>
+      <phase duration="40" state="srrrsGGGsrrrsrrr"/>
+      <phase duration="4" state="srrrsyyysrrrsrrr"/>
+      <phase duration="40" state="srrrsrrrsGGGsrrr"/>
+      <phase duration="4" state="srrrsrrrsyyysrrr"/>
+      <phase duration="40" state="srrrsrrrsrrrsGGG"/>
+      <phase duration="4" state="srrrsrrrsrrrsyyy"/>
+   </tlLogic>
+   <tlLogic id="test_tll_44" type="static" programID="tll_test_44" offset="32">
+      <phase duration="40" state="sGGGsrrrsrrrsrrr"/>
+      <phase duration="4" state="syyysrrrsrrrsrrr"/>
+      <phase duration="40" state="srrrsGGGsrrrsrrr"/>
+      <phase duration="4" state="srrrsyyysrrrsrrr"/>
+      <phase duration="40" state="srrrsrrrsGGGsrrr"/>
+      <phase duration="4" state="srrrsrrrsyyysrrr"/>
+      <phase duration="40" state="srrrsrrrsrrrsGGG"/>
+      <phase duration="4" state="srrrsrrrsrrrsyyy"/>
+   </tlLogic>
+</tlLogics>

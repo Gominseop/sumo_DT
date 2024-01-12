@@ -1,0 +1,16 @@
+<configuration>
+   <input>
+      <node-files value="C:/Users/FILAB/Desktop/arrange/5_code/SUMO/sumo_DT/dummy/dummy19.nod.xml"/>
+      <edge-files value="C:/Users/FILAB/Desktop/arrange/5_code/SUMO/sumo_DT/dummy/dummy19.edg.xml"/>
+      <connection-files value="C:/Users/FILAB/Desktop/arrange/5_code/SUMO/sumo_DT/dummy/dummy19.con.xml"/>
+      <tllogic-files value="C:/Users/FILAB/Desktop/arrange/5_code/SUMO/sumo_DT/dummy/dummy19.tll.xml"/>
+   </input>
+
+   <output>
+      <output-file value="C:/Users/FILAB/Desktop/arrange/5_code/SUMO/sumo_DT/dummy/dummy19.net.xml"/>
+   </output>
+
+   <report>
+      <verbose value="true"/>
+   </report>
+</configuration>

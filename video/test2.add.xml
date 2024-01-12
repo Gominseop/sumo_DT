@@ -1,0 +1,8 @@
+<additional>
+    <edgeData id="edge1" file="test_edge1.xml"/>
+    <laneData id="lane1" file="test_lane1.xml"/>
+    <timedEvent type="SaveTLSStates" source="1" dest="test_tls_state.xml"/>
+    <timedEvent type="SaveTLSSwitchTimes" source="1" dest="test_tls_switch.xml"/>
+    <timedEvent type="SaveTLSSwitchStates" source="1" dest="test_tls_switch_state.xml"/>
+    <timedEvent type="SaveTLSProgram" source="1" dest="test_tls_program.xml"/>
+</additional>

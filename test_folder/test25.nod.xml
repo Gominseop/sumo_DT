@@ -1,0 +1,152 @@
+<nodes>
+   <node id="test_00" x="100.000000" y="100.000000" type="traffic_light_right_on_red" tl="test_tll_00"/>
+   <node id="test_00_0" x="100.000000" y="125.000000" type="priority"/>
+   <node id="test_00_1" x="125.000000" y="100.000000" type="priority"/>
+   <node id="test_00_2" x="100.000000" y="75.000000" type="priority"/>
+   <node id="test_00_3" x="75.000000" y="100.000000" type="priority"/>
+
+   <node id="test_01" x="100.000000" y="200.000000" type="traffic_light_right_on_red" tl="test_tll_01"/>
+   <node id="test_01_0" x="100.000000" y="225.000000" type="priority"/>
+   <node id="test_01_1" x="125.000000" y="200.000000" type="priority"/>
+   <node id="test_01_2" x="100.000000" y="175.000000" type="priority"/>
+   <node id="test_01_3" x="75.000000" y="200.000000" type="priority"/>
+
+   <node id="test_02" x="100.000000" y="300.000000" type="traffic_light_right_on_red" tl="test_tll_02"/>
+   <node id="test_02_0" x="100.000000" y="325.000000" type="priority"/>
+   <node id="test_02_1" x="125.000000" y="300.000000" type="priority"/>
+   <node id="test_02_2" x="100.000000" y="275.000000" type="priority"/>
+   <node id="test_02_3" x="75.000000" y="300.000000" type="priority"/>
+
+   <node id="test_03" x="100.000000" y="400.000000" type="traffic_light_right_on_red" tl="test_tll_03"/>
+   <node id="test_03_0" x="100.000000" y="425.000000" type="priority"/>
+   <node id="test_03_1" x="125.000000" y="400.000000" type="priority"/>
+   <node id="test_03_2" x="100.000000" y="375.000000" type="priority"/>
+   <node id="test_03_3" x="75.000000" y="400.000000" type="priority"/>
+
+   <node id="test_04" x="100.000000" y="500.000000" type="traffic_light_right_on_red" tl="test_tll_04"/>
+   <node id="test_04_0" x="100.000000" y="525.000000" type="priority"/>
+   <node id="test_04_1" x="125.000000" y="500.000000" type="priority"/>
+   <node id="test_04_2" x="100.000000" y="475.000000" type="priority"/>
+   <node id="test_04_3" x="75.000000" y="500.000000" type="priority"/>
+
+   <node id="test_10" x="200.000000" y="100.000000" type="traffic_light_right_on_red" tl="test_tll_10"/>
+   <node id="test_10_0" x="200.000000" y="125.000000" type="priority"/>
+   <node id="test_10_1" x="225.000000" y="100.000000" type="priority"/>
+   <node id="test_10_2" x="200.000000" y="75.000000" type="priority"/>
+   <node id="test_10_3" x="175.000000" y="100.000000" type="priority"/>
+
+   <node id="test_11" x="200.000000" y="200.000000" type="traffic_light_right_on_red" tl="test_tll_11"/>
+   <node id="test_11_0" x="200.000000" y="225.000000" type="priority"/>
+   <node id="test_11_1" x="225.000000" y="200.000000" type="priority"/>
+   <node id="test_11_2" x="200.000000" y="175.000000" type="priority"/>
+   <node id="test_11_3" x="175.000000" y="200.000000" type="priority"/>
+
+   <node id="test_12" x="200.000000" y="300.000000" type="traffic_light_right_on_red" tl="test_tll_12"/>
+   <node id="test_12_0" x="200.000000" y="325.000000" type="priority"/>
+   <node id="test_12_1" x="225.000000" y="300.000000" type="priority"/>
+   <node id="test_12_2" x="200.000000" y="275.000000" type="priority"/>
+   <node id="test_12_3" x="175.000000" y="300.000000" type="priority"/>
+
+   <node id="test_13" x="200.000000" y="400.000000" type="traffic_light_right_on_red" tl="test_tll_13"/>
+   <node id="test_13_0" x="200.000000" y="425.000000" type="priority"/>
+   <node id="test_13_1" x="225.000000" y="400.000000" type="priority"/>
+   <node id="test_13_2" x="200.000000" y="375.000000" type="priority"/>
+   <node id="test_13_3" x="175.000000" y="400.000000" type="priority"/>
+
+   <node id="test_14" x="200.000000" y="500.000000" type="traffic_light_right_on_red" tl="test_tll_14"/>
+   <node id="test_14_0" x="200.000000" y="525.000000" type="priority"/>
+   <node id="test_14_1" x="225.000000" y="500.000000" type="priority"/>
+   <node id="test_14_2" x="200.000000" y="475.000000" type="priority"/>
+   <node id="test_14_3" x="175.000000" y="500.000000" type="priority"/>
+
+   <node id="test_20" x="300.000000" y="100.000000" type="traffic_light_right_on_red" tl="test_tll_20"/>
+   <node id="test_20_0" x="300.000000" y="125.000000" type="priority"/>
+   <node id="test_20_1" x="325.000000" y="100.000000" type="priority"/>
+   <node id="test_20_2" x="300.000000" y="75.000000" type="priority"/>
+   <node id="test_20_3" x="275.000000" y="100.000000" type="priority"/>
+
+   <node id="test_21" x="300.000000" y="200.000000" type="traffic_light_right_on_red" tl="test_tll_21"/>
+   <node id="test_21_0" x="300.000000" y="225.000000" type="priority"/>
+   <node id="test_21_1" x="325.000000" y="200.000000" type="priority"/>
+   <node id="test_21_2" x="300.000000" y="175.000000" type="priority"/>
+   <node id="test_21_3" x="275.000000" y="200.000000" type="priority"/>
+
+   <node id="test_22" x="300.000000" y="300.000000" type="traffic_light_right_on_red" tl="test_tll_22"/>
+   <node id="test_22_0" x="300.000000" y="325.000000" type="priority"/>
+   <node id="test_22_1" x="325.000000" y="300.000000" type="priority"/>
+   <node id="test_22_2" x="300.000000" y="275.000000" type="priority"/>
+   <node id="test_22_3" x="275.000000" y="300.000000" type="priority"/>
+
+   <node id="test_23" x="300.000000" y="400.000000" type="traffic_light_right_on_red" tl="test_tll_23"/>
+   <node id="test_23_0" x="300.000000" y="425.000000" type="priority"/>
+   <node id="test_23_1" x="325.000000" y="400.000000" type="priority"/>
+   <node id="test_23_2" x="300.000000" y="375.000000" type="priority"/>
+   <node id="test_23_3" x="275.000000" y="400.000000" type="priority"/>
+
+   <node id="test_24" x="300.000000" y="500.000000" type="traffic_light_right_on_red" tl="test_tll_24"/>
+   <node id="test_24_0" x="300.000000" y="525.000000" type="priority"/>
+   <node id="test_24_1" x="325.000000" y="500.000000" type="priority"/>
+   <node id="test_24_2" x="300.000000" y="475.000000" type="priority"/>
+   <node id="test_24_3" x="275.000000" y="500.000000" type="priority"/>
+
+   <node id="test_30" x="400.000000" y="100.000000" type="traffic_light_right_on_red" tl="test_tll_30"/>
+   <node id="test_30_0" x="400.000000" y="125.000000" type="priority"/>
+   <node id="test_30_1" x="425.000000" y="100.000000" type="priority"/>
+   <node id="test_30_2" x="400.000000" y="75.000000" type="priority"/>
+   <node id="test_30_3" x="375.000000" y="100.000000" type="priority"/>
+
+   <node id="test_31" x="400.000000" y="200.000000" type="traffic_light_right_on_red" tl="test_tll_31"/>
+   <node id="test_31_0" x="400.000000" y="225.000000" type="priority"/>
+   <node id="test_31_1" x="425.000000" y="200.000000" type="priority"/>
+   <node id="test_31_2" x="400.000000" y="175.000000" type="priority"/>
+   <node id="test_31_3" x="375.000000" y="200.000000" type="priority"/>
+
+   <node id="test_32" x="400.000000" y="300.000000" type="traffic_light_right_on_red" tl="test_tll_32"/>
+   <node id="test_32_0" x="400.000000" y="325.000000" type="priority"/>
+   <node id="test_32_1" x="425.000000" y="300.000000" type="priority"/>
+   <node id="test_32_2" x="400.000000" y="275.000000" type="priority"/>
+   <node id="test_32_3" x="375.000000" y="300.000000" type="priority"/>
+
+   <node id="test_33" x="400.000000" y="400.000000" type="traffic_light_right_on_red" tl="test_tll_33"/>
+   <node id="test_33_0" x="400.000000" y="425.000000" type="priority"/>
+   <node id="test_33_1" x="425.000000" y="400.000000" type="priority"/>
+   <node id="test_33_2" x="400.000000" y="375.000000" type="priority"/>
+   <node id="test_33_3" x="375.000000" y="400.000000" type="priority"/>
+
+   <node id="test_34" x="400.000000" y="500.000000" type="traffic_light_right_on_red" tl="test_tll_34"/>
+   <node id="test_34_0" x="400.000000" y="525.000000" type="priority"/>
+   <node id="test_34_1" x="425.000000" y="500.000000" type="priority"/>
+   <node id="test_34_2" x="400.000000" y="475.000000" type="priority"/>
+   <node id="test_34_3" x="375.000000" y="500.000000" type="priority"/>
+
+   <node id="test_40" x="500.000000" y="100.000000" type="traffic_light_right_on_red" tl="test_tll_40"/>
+   <node id="test_40_0" x="500.000000" y="125.000000" type="priority"/>
+   <node id="test_40_1" x="525.000000" y="100.000000" type="priority"/>
+   <node id="test_40_2" x="500.000000" y="75.000000" type="priority"/>
+   <node id="test_40_3" x="475.000000" y="100.000000" type="priority"/>
+
+   <node id="test_41" x="500.000000" y="200.000000" type="traffic_light_right_on_red" tl="test_tll_41"/>
+   <node id="test_41_0" x="500.000000" y="225.000000" type="priority"/>
+   <node id="test_41_1" x="525.000000" y="200.000000" type="priority"/>
+   <node id="test_41_2" x="500.000000" y="175.000000" type="priority"/>
+   <node id="test_41_3" x="475.000000" y="200.000000" type="priority"/>
+
+   <node id="test_42" x="500.000000" y="300.000000" type="traffic_light_right_on_red" tl="test_tll_42"/>
+   <node id="test_42_0" x="500.000000" y="325.000000" type="priority"/>
+   <node id="test_42_1" x="525.000000" y="300.000000" type="priority"/>
+   <node id="test_42_2" x="500.000000" y="275.000000" type="priority"/>
+   <node id="test_42_3" x="475.000000" y="300.000000" type="priority"/>
+
+   <node id="test_43" x="500.000000" y="400.000000" type="traffic_light_right_on_red" tl="test_tll_43"/>
+   <node id="test_43_0" x="500.000000" y="425.000000" type="priority"/>
+   <node id="test_43_1" x="525.000000" y="400.000000" type="priority"/>
+   <node id="test_43_2" x="500.000000" y="375.000000" type="priority"/>
+   <node id="test_43_3" x="475.000000" y="400.000000" type="priority"/>
+
+   <node id="test_44" x="500.000000" y="500.000000" type="traffic_light_right_on_red" tl="test_tll_44"/>
+   <node id="test_44_0" x="500.000000" y="525.000000" type="priority"/>
+   <node id="test_44_1" x="525.000000" y="500.000000" type="priority"/>
+   <node id="test_44_2" x="500.000000" y="475.000000" type="priority"/>
+   <node id="test_44_3" x="475.000000" y="500.000000" type="priority"/>
+
+</nodes>

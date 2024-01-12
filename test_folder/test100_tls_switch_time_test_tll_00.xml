@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2023-08-07 17:00:18 by Eclipse SUMO GUI Version 1.15.0
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
+
+    <input>
+        <net-file value="C:/Users/FILAB/Desktop/arrange/5_code/SUMO/sumo_DT/test_folder/test100.net.xml"/>
+        <route-files value="C:/Users/FILAB/Desktop/arrange/5_code/SUMO/sumo_DT/test_folder/test100.rou.xml"/>
+        <additional-files value="C:/Users/FILAB/Desktop/arrange/5_code/SUMO/sumo_DT/test_folder/test100.add.xml"/>
+    </input>
+
+    <output>
+        <queue-output value="C:/Users/FILAB/Desktop/arrange/5_code/SUMO/sumo_DT/test_folder/test100_queue.xml"/>
+        <queue-output.period value="50"/>
+        <summary-output value="C:/Users/FILAB/Desktop/arrange/5_code/SUMO/sumo_DT/test_folder/test100_summary.xml"/>
+        <summary-output.period value="50"/>
+    </output>
+
+    <time>
+        <begin value="0"/>
+        <end value="600"/>
+    </time>
+
+</configuration>
+-->
+
+<tlsSwitches xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/tlsswitches_file.xsd">
+</tlsSwitches>

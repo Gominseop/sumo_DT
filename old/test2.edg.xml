@@ -1,0 +1,71 @@
+<edges>
+   <edge id="0_0i" from="0_0" to="0" numLanes="5" speed="60.000000" length="90.000000"/>
+   <edge id="0_0o" from="0" to="0_0" numLanes="5" speed="60.000000" length="90.000000"/>
+
+   <edge id="0_1i" from="0_1" to="0" numLanes="6" speed="60.000000" length="175.000000"/>
+   <edge id="0_1o" from="0" to="0_1" numLanes="5" speed="60.000000" length="175.000000"/>
+
+   <edge id="0_2i" from="0_2" to="0" numLanes="3" speed="60.000000" length="100.000000"/>
+   <edge id="0_2o" from="0" to="0_2" numLanes="2" speed="60.000000" length="100.000000"/>
+
+   <edge id="1_0i" from="1_0" to="1" numLanes="5" speed="60.000000" length="100.000000"/>
+   <edge id="1_0o" from="1" to="1_0" numLanes="3" speed="60.000000" length="100.000000"/>
+
+   <edge id="1_1i" from="1_1" to="1" numLanes="5" speed="60.000000" length="136.000000"/>
+   <edge id="1_1o" from="1" to="1_1" numLanes="4" speed="60.000000" length="136.000000"/>
+
+   <edge id="1_2i" from="1_2" to="1" numLanes="5" speed="60.000000" length="100.000000"/>
+   <edge id="1_2o" from="1" to="1_2" numLanes="5" speed="60.000000" length="100.000000"/>
+
+   <edge id="1_3i" from="1_3" to="1" numLanes="5" speed="60.000000" length="130.000000"/>
+   <edge id="1_3o" from="1" to="1_3" numLanes="4" speed="60.000000" length="130.000000"/>
+
+   <edge id="2_0i" from="2_0" to="2" numLanes="5" speed="60.000000" length="100.000000"/>
+   <edge id="2_0o" from="2" to="2_0" numLanes="5" speed="60.000000" length="100.000000"/>
+
+   <edge id="2_1i" from="2_1" to="2" numLanes="4" speed="60.000000" length="100.000000"/>
+   <edge id="2_1o" from="2" to="2_1" numLanes="4" speed="60.000000" length="100.000000"/>
+
+   <edge id="2_2i" from="2_2" to="2" numLanes="5" speed="60.000000" length="70.000000"/>
+   <edge id="2_2o" from="2" to="2_2" numLanes="4" speed="60.000000" length="70.000000"/>
+
+   <edge id="3_0i" from="3_0" to="3" numLanes="5" speed="60.000000" length="100.000000"/>
+   <edge id="3_0o" from="3" to="3_0" numLanes="3" speed="60.000000" length="100.000000"/>
+
+   <edge id="3_1i" from="3_1" to="3" numLanes="2" speed="60.000000" length="50.000000"/>
+   <edge id="3_1o" from="3" to="3_1" numLanes="3" speed="60.000000" length="50.000000"/>
+
+   <edge id="3_2i" from="3_2" to="3" numLanes="5" speed="60.000000" length="130.000000"/>
+   <edge id="3_2o" from="3" to="3_2" numLanes="5" speed="60.000000" length="130.000000"/>
+
+   <edge id="3_3i" from="3_3" to="3" numLanes="4" speed="60.000000" length="100.000000"/>
+   <edge id="3_3o" from="3" to="3_3" numLanes="4" speed="60.000000" length="100.000000"/>
+
+   <edge id="4_0i" from="4_0" to="4" numLanes="5" speed="60.000000" length="80.000000"/>
+   <edge id="4_0o" from="4" to="4_0" numLanes="3" speed="60.000000" length="80.000000"/>
+
+   <edge id="4_1i" from="4_1" to="4" numLanes="5" speed="60.000000" length="80.000000"/>
+   <edge id="4_1o" from="4" to="4_1" numLanes="4" speed="60.000000" length="80.000000"/>
+
+   <edge id="4_2i" from="4_2" to="4" numLanes="5" speed="60.000000" length="100.000000"/>
+   <edge id="4_2o" from="4" to="4_2" numLanes="4" speed="60.000000" length="100.000000"/>
+
+   <edge id="4_3i" from="4_3" to="4" numLanes="5" speed="60.000000" length="100.000000"/>
+   <edge id="4_3o" from="4" to="4_3" numLanes="4" speed="60.000000" length="100.000000"/>
+
+   <edge id="r1_0_1" from="0_1" to="1_0" numLanes="4" speed="60.000000" length="725.000000"/>
+   <edge id="r1_1_0" from="1_0" to="0_1" numLanes="4" speed="60.000000" length="725.000000"/>
+
+   <edge id="r2_1_2" from="1_2" to="2_0" numLanes="4" speed="60.000000" length="578.000000"/>
+   <edge id="r2_2_1" from="2_0" to="1_2" numLanes="4" speed="60.000000" length="578.000000"/>
+
+   <edge id="r3_2_3" from="2_1" to="3_3" numLanes="3" speed="60.000000" length="335.000000"/>
+   <edge id="r3_3_2" from="3_3" to="2_1" numLanes="3" speed="60.000000" length="335.000000"/>
+
+   <edge id="r4_3_4" from="3_0" to="4_2" numLanes="3" speed="60.000000" length="578.000000"/>
+   <edge id="r4_4_3" from="4_2" to="3_0" numLanes="3" speed="60.000000" length="578.000000"/>
+
+   <edge id="r5_4_1" from="4_3" to="1_1" numLanes="3" speed="60.000000" length="500.000000"/>
+   <edge id="r5_1_4" from="1_1" to="4_3" numLanes="3" speed="60.000000" length="500.000000"/>
+
+</edges>
