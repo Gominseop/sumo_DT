@@ -523,18 +523,41 @@ if __name__ == '__main__':
     # dbm.add_intersection(f'3500059800', f'리라유치원앞교차로', 674.7659, -102.9688, shape=3, side_points=side)
     # dbm.commit()
 
-    node1 = 3500302300
-    node2 = 3500007100
-    road_id12 = 3500302300
-    road_id21 = 3500007100
-    road_name = '중흥로'
-    speed = 60
-    length = (308.2049065 - 100)*(1/1)
-    lanenum12 = 3
-    lanenum21 = 3
-    r = Road(f"{road_id12}-{road_id21}", road_name, (str(node1), 0), (str(node2), 2),
-             lanenum12, lanenum21, speed, length)
-    dbm.add_road(r)
+    tlids = ['3500006301', '3500006600', '3500006650', '3500006660', '3500006700',
+             '3500006901', '3500007100', '3500007300', '3500007350', '3500007500',
+             '3500007700', '3500007900', '3500008000', '3500051802', '3500051804',
+             '3500058500', '3500058550', '3500058700', '3500058900', '3500059300',
+             '3500059350', '3500059800', '3500059850', '3500060100', '3500060600',
+             '3500060650', '3500060660', '3500060800', '3500060850', '3500060860',
+             '3500062100', '3500062500', '3500062550', '3500065800', '3500065850',
+             '3500302300', '3510000200', '3510000250', '3510000300', '3510000400',
+             '3510021200', '3510021250', '3510021300', '3510021350', '3510021400',
+             '3510021500', '3510021700']
+
+    case = 1
+    for tlid in tlids:
+        if case == 0:
+            dbm.set_tl_in_intersection(tlid, tlid)
+        elif case == 1:
+            dbm.set_tl_in_intersection(tlid, tlid + '_1')
+        elif case == 2:
+            dbm.set_tl_in_intersection(tlid, tlid + '_2')
+        elif case == 3:
+            dbm.set_tl_in_intersection(tlid, tlid + '_3')
+    dbm.commit()
+
+    # node1 = 3500302300
+    # node2 = 3500007100
+    # road_id12 = 3500302300
+    # road_id21 = 3500007100
+    # road_name = '중흥로'
+    # speed = 60
+    # length = (308.2049065 - 100)*(1/1)
+    # lanenum12 = 3
+    # lanenum21 = 3
+    # r = Road(f"{road_id12}-{road_id21}", road_name, (str(node1), 0), (str(node2), 2),
+    #          lanenum12, lanenum21, speed, length)
+    # dbm.add_road(r)
 
     #ep = EdgeParameter(mid='test', file_name='test_test', end=3600, period=100)
     #oo = Output('test', 'output_test', {'summary', 'queue', 'edge', 'tllight'}, period=100, edge_params=ep,
