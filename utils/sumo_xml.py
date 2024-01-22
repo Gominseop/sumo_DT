@@ -155,48 +155,122 @@ class SUMOGenerator:
     def generate_connection_file(self, connection_path):
         # u턴 추가 지역
         rdic = dict(zip(['R', 'S', 'L', 'U'], [0, 1, 2, 3]))
+
         with open(connection_path, "w") as conn:
             conn.write(f'<connections>\n')
             for icid, ic in self.icnodes.items():
                 rsl_num = dict()
-                right = dict() # key로 우회전해서 오는 side의 우회전 개수 key: (sid, num)
-                straight = dict() # key로 직진해서 오는 side의 직진 개수 key: (sid, num)
-                for sid, side in ic.sides.items():
-                    rsl = side.rslu.split(',')
-                    right[rsl[0]] = (sid, side.route.count('R'))
-                    straight[rsl[1]] = (sid, side.route.count('S'))
+                right = dict() # key로 우회전해서 오는 side의 우회전 개수 key: [sid, num]
+                straight = dict() # key로 직진해서 오는 side의 직진 개수 key: [sid, num]
+                left = dict () # key로 좌회전해서 오는 side의 좌회전 개수 key: [sid, num]
+                # 각 방향 처리, [[4], [3, 2], [1], [0]]
+
+                for i in range(ic.shape):
+                    right[f'{i}'] = []
+                    straight[f'{i}'] = []
+                    left[f'{i}'] = []
 
                 for sid, side in ic.sides.items():
-                    if side.rslu == '':
-                        continue
-                    rsl = side.rslu.split(',')
-                    s_count = right[rsl[1]][1] if rsl[1] in right else 0
-                    l_count = ic.sides[rsl[2]].exitLaneNum-1 if rsl[2] in ic.sides.keys() else 0
-                    
-                    # 직진해야 하는 수 + 우회전에서 오는 수(s_count)가 exitLaneNum보다 크다면, 우회전을 공유
-                    if rsl[1] != '-1' and side.route.count('S') + s_count > ic.sides[rsl[1]].exitLaneNum:
-                        s_count = s_count - (side.route.count('S') + s_count - ic.sides[rsl[1]].exitLaneNum)
+                    rsl = side.rslu.split(';')
+                    for j, rs in enumerate(rsl):
+                        rsl[j] = rs.split(',')
+                    for q, a in enumerate(rsl):
+                        for w, b in enumerate(a):
+                            if b == '-1':
+                                rsl[q] = []
 
-                    rsl_num[sid] = {'r': 0, 's': s_count, 'l': l_count}
-                    for i, rs in enumerate(side.route.split(',')):
-                        for r in rs:
+                    # 각 R, S 방향으로가는 count 정리
+                    for j, rr in enumerate(rsl[0]):
+                        right[rsl[0][j]].append((sid, side.route.count(f'R{j}')))
+                    for k, sr in enumerate(rsl[1]):
+                        straight[rsl[1][k]].append((sid, side.route.count(f'S{k}')))
+                    for l, lr in enumerate(rsl[2]):
+                        left[rsl[2][l]].append((sid, side.route.count(f'L{l}')))
+                    # right[rsl[0]] = (sid, side.route.count('R'))
+                    # straight[rsl[1]] = (sid, side.route.count('S'))
+
+                for sid, side in ic.sides.items():
+                    rsl = side.rslu.split(';')
+                    for j, rs in enumerate(rsl):
+                        rsl[j] = rs.split(',')
+                    for q, a in enumerate(rsl):
+                        for w, b in enumerate(a):
+                            if b == '-1':
+                                rsl[q] = []
+
+                    # sid의 입장에서 갈 곳과 connection을 연결하기 위한 연산
+                    s_num = len(rsl[1]) # sid에서 가는 직진 경로 수
+                    s_count = []
+                    total_s_route = [0 for a in range(s_num)]
+                    for i in range(s_num):
+                        # 우회전에서 오는 경로가 2개일 수는 없음 방해할 수 밖에 없기 때문
+                        s_count.append(right[rsl[1][i]][0][1] if len(right[rsl[1][i]]) else 0)
+                        s_to = rsl[1][i]
+                        for s_from, from_num in straight[rsl[1][i]]:
+                            # 여러 side에서 직진으로 올 경우에 대한 처리 (전체 직진 수)
+                            total_s_route[i] = total_s_route[i] + from_num
+                            if sid == s_from:
+                                continue
+                            # 오는 방향 우선 순위 (sid + shape - from id) % shape 작은 쪽이 오른쪽에 할당됨
+                            cv1 = (int(s_to) + ic.shape - int(s_from)) % ic.shape
+                            cv2 = (int(s_to) + ic.shape - int(sid)) % ic.shape
+                            if cv1 < cv2:
+                                s_count[i] = s_count[i] + from_num
+
+                        # 직진해야 하는 수 + 우회전에서 오는 수(s_count)가 exitLaneNum보다 크다면, 우회전을 공유
+                        if rsl[1] != '-1' and total_s_route[i] + s_count[i] > ic.sides[rsl[1][i]].exitLaneNum:
+                            s_count[i] = s_count[i] - (total_s_route[i] + s_count[i] - ic.sides[rsl[1][i]].exitLaneNum)
+
+                    # 좌회전은 여러 side에서 하나의 side로 할 수도 있기 때문
+                    # l_count = ic.sides[rsl[2]].exitLaneNum-1 - (우선 순위 높은 side의 좌회전 수)
+                    # 좌회전도 하나의 side에서 여러 side로 가는 것이 가능하기 때문에 stright와 같은 방식 채용
+                    l_num = len(rsl[2])
+                    l_count = []
+                    for i in range(l_num):
+                        l_count.append(ic.sides[rsl[2][i]].exitLaneNum-1 if rsl[2][i] in ic.sides.keys() else 0)
+                        l_to = rsl[2][i]
+                        for l_from, from_num in left[rsl[2][i]]:
+                            if sid == l_from:
+                                continue
+                            # 오는 방향 우선 순위 (sid + shape - from id) % shape 큰 쪽이 왼쪽에 할당됨
+                            cv1 = (int(l_to) + ic.shape - int(l_from)) % ic.shape
+                            cv2 = (int(l_to) + ic.shape - int(sid)) % ic.shape
+                            if cv1 > cv2:
+                                l_count[i] = l_count[i] - from_num
+                        if l_count[i] - side.route.count(f'L{i}') + 1 < 0:
+                            l_count[i] = side.route.count(f'L{i}') - 1
+
+                    # sid에서 나가는 우회전 경로가 다수일 경우 처리
+                    r_count = {i: 0 for i in range(len(rsl[0]))}
+                    rsl_num[sid] = {'r': r_count, 's': s_count, 'l': l_count}
+
+                    # route split
+                    sroute = side.route.split(';')
+                    for i, rou in enumerate(sroute):
+                        sroute[i] = rou.split(',')
+
+                    # 여기부터
+                    for i, rs in enumerate(sroute):
+                        if rs == ['']:
+                            continue
+                        for r, idx in rs:
                             if r == 'R':
-                                conn.write(f'   <connection from="{icid}_{sid}i" to="{icid}_{rsl[rdic[r]]}o" '
-                                           f'fromLane="{i}" toLane="{rsl_num[sid]["r"]}"/>\n')
-                                rsl_num[sid]["r"] += 1
+                                conn.write(f'   <connection from="{icid}_{sid}i" to="{icid}_{rsl[rdic[r]][int(idx)]}o" '
+                                           f'fromLane="{i}" toLane="{rsl_num[sid]["r"][int(idx)]}"/>\n')
+                                rsl_num[sid]["r"][int(idx)] += 1
                             elif r == 'S':
-                                conn.write(f'   <connection from="{icid}_{sid}i" to="{icid}_{rsl[rdic[r]]}o" '
-                                           f'fromLane="{i}" toLane="{rsl_num[sid]["s"]}"/>\n')
-                                rsl_num[sid]["s"] += 1
+                                conn.write(f'   <connection from="{icid}_{sid}i" to="{icid}_{rsl[rdic[r]][int(idx)]}o" '
+                                           f'fromLane="{i}" toLane="{rsl_num[sid]["s"][int(idx)]}"/>\n')
+                                rsl_num[sid]["s"][int(idx)] += 1
                             elif r == 'L':
-                                conn.write(f'   <connection from="{icid}_{sid}i" to="{icid}_{rsl[rdic[r]]}o" '
-                                           f'fromLane="{i}" toLane="{rsl_num[sid]["l"]}"/>\n')
-                                rsl_num[sid]["l"] -= 1
+                                conn.write(f'   <connection from="{icid}_{sid}i" to="{icid}_{rsl[rdic[r]][int(idx)]}o" '
+                                           f'fromLane="{i}" toLane="{rsl_num[sid]["l"][int(idx)]}"/>\n')
+                                rsl_num[sid]["l"][int(idx)] -= 1
                             elif r == 'U':
                                 # conn.write(f'   <connection from="{icid}_{sid}i" to="{icid}_{rsl[rdic[r]]}o" '
                                 #            f'fromLane="{i}" toLane="0"/>\n')
-                                conn.write(f'   <connection from="{icid}_{sid}i" to="{icid}_{rsl[rdic[r]]}o" '
-                                           f'fromLane="{i}" toLane="{ic.sides[rsl[rdic[r]]].exitLaneNum-1}"/>\n')
+                                conn.write(f'   <connection from="{icid}_{sid}i" to="{icid}_{rsl[rdic[r]][int(idx)]}o" '
+                                           f'fromLane="{i}" toLane="{ic.sides[rsl[rdic[r]][int(idx)]].exitLaneNum-1}"/>\n')
                                 # 자기 회전 여부
                                 #if sid == rsl[rdic[r]]:
                                 #    self.u_check[(icid, sid)] = True
@@ -217,7 +291,7 @@ class SUMOGenerator:
                 tll.write(f'   <tlLogic id="{tlid}" type="{tl.type}" programID="{tl.programID}" offset="{tl.offset}">\n')
                 con_targets = []
                 for sid, side in self.tl_ic[tlid].sides.items():
-                    con_targets.append(side.route.replace(',', ''))
+                    con_targets.append(side.route.replace(';', ',').split(','))
 
                 for idx, phase in tl.phases.items():
                     phase_state = ''
@@ -225,12 +299,14 @@ class SUMOGenerator:
                     sid = -1
                     for s, rs in zip(phase['state'], con_targets):
                         sid += 1
+                        if rs == ['']:
+                            continue
                         for r in rs:
                             # 우회전
-                            if r == "R":
+                            if r[0] == "R":
                                 phase_state += 's'
                             # 유턴 무제한 단 같은 우선 순위로 u턴을 비현실적인 수준으로 진행 바로 옆 라인으로
-                            elif r == "U":
+                            elif r[0] == "U":
                                 # 같은 side u turn은 GG, 다른 side로의 u turn은 G
                                 phase_state += 'G'
                                 #if self.u_check[(self.tl_ic[tlid].id, str(sid))]:
@@ -252,29 +328,29 @@ class SUMOGenerator:
                             elif s == 'b':
                                 phase_state += 'o'
                             # 노란불 + 빨깐불
-                            elif s == 'r' and r == 'S':
+                            elif s == 'r' and r[0] == 'S':
                                 phase_state += 'r'
-                            elif s == 'r' and r == 'L':
+                            elif s == 'r' and r[0] == 'L':
                                 phase_state += 'y'
                             # 좌회전 + 빨간불
-                            elif s == 'L' and r == 'S':
+                            elif s == 'L' and r[0] == 'S':
                                 phase_state += 'r'
-                            elif s == 'L' and r == 'L':
+                            elif s == 'L' and r[0] == 'L':
                                 phase_state += 'G'
                             # 직진
-                            elif s == 'g' and r == 'S':
+                            elif s == 'g' and r[0] == 'S':
                                 phase_state += 'G'
-                            elif s == 'g' and r == 'L':
+                            elif s == 'g' and r[0] == 'L':
                                 phase_state += 'r'
                             #직진용 노란불
-                            elif s == 'y' and r == 'S':
+                            elif s == 'y' and r[0] == 'S':
                                 phase_state += 'y'
-                            elif s == 'y' and r == 'L':
+                            elif s == 'y' and r[0] == 'L':
                                 phase_state += 'r'
                             # 직진 + 노란불
-                            elif s == 'l' and r == 'S':
+                            elif s == 'l' and r[0] == 'S':
                                 phase_state += 'G'
-                            elif s == 'l' and r == 'L':
+                            elif s == 'l' and r[0] == 'L':
                                 phase_state += 'y'
                     tll.write(f'      <phase duration="{phase["duration"]}" state="{phase_state}"/>\n')
                 tll.write(f'   </tlLogic>\n')
@@ -490,7 +566,7 @@ if __name__=="__main__":
              '3500060800', '3500058900', '3500060850', '3500060860', '3500059350', '3500058550', '3500302300',
              '3500051804', '3500051802', '3500007400', '3500007100', '3500006900', '3500058700', '3500006901',
              '3500058500', '3500006600', '3500006650', '3500006660', '3500006800', '3500007300', '3500007350',
-             '3500059300', '3500059800', '3500059850']
+             '3500059300', '3500059800', '3500059850', '3500007700']
     # 형산 교차로는 문제가 있어 제외 3500007700
     # 교통섬 X, 직진이 우회전 방해 가능
     ics = dbm.read_intersection(icids)

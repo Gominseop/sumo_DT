@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(617, 998)
+        MainWindow.resize(617, 1070)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.centralwidget)
@@ -259,7 +259,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_2.addWidget(self.output_log)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 617, 21))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 617, 31))
         self.menubar.setObjectName("menubar")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
@@ -278,7 +278,7 @@ class Ui_MainWindow(object):
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'Gulim\'; font-size:9pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">3500006301 3500006700 3500007500 3500007900 3500008000 3510000200 3510000250 3510000300 3510000400 3510000450 3510021700 3510021750 3510021500 3510021400 3500065800 3500065850 3500062500 3500062550 3510021350 3510021300 3510021200 3510021250 3500062100 3500060600 3500060650 3500060660 3500062400 3500060100 3500060800 3500058900 3500060850 3500060860 3500059350 3500058550 3500302300 3500051804 3500051802 3500007400 3500007100 3500006900 3500058700 3500006901 3500058500 3500006600 3500006650 3500006660 3500006800 3500007300 3500007350 3500059300 3500059800 3500059850</p></body></html>"))
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">3500006301 3500006700 3500007500 3500007900 3500008000 3510000200 3510000250 3510000300 3510000400 3510000450 3510021700 3510021750 3510021500 3510021400 3500065800 3500065850 3500062500 3500062550 3510021350 3510021300 3510021200 3510021250 3500062100 3500060600 3500060650 3500060660 3500062400 3500060100 3500060800 3500058900 3500060850 3500060860 3500059350 3500058550 3500302300 3500051804 3500051802 3500007400 3500007100 3500006900 3500058700 3500006901 3500058500 3500006600 3500006650 3500006660 3500006800 3500007300 3500007350 3500059300 3500059800 3500059850 3500007700</p></body></html>"))
         self.text_output_name.setText(_translate("MainWindow", "Output File Name"))
         self.input_output_name.setText(_translate("MainWindow", "test"))
         self.button_network.setText(_translate("MainWindow", "Generate Network"))

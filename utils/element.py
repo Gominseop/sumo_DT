@@ -92,13 +92,17 @@ class SideNode(NodePoint):
     def set_route(self, routes):
         # 가장 오른쪽 차선부터 순서대로 list로 받음
         # (str) R-right, S-Stright, L-Left, U-Uturn, RSLU 순서
-        # e.g. RSL, RS
+        # e.g. [[R0,S0,L0],[R0,S0]]
+        # e.g. R0,S0,L0;R0,S0
         if type(routes) == list or type(routes) == tuple:
             if not self._check_route_num(routes):
                 raise ValueError('entryLineNum != route num')
-            routes = ','.join(routes)
+            tr = []
+            for route in routes:
+                tr.append(','.join(route))
+            routes = ';'.join(tr)
         elif type(routes) == str:
-            if not self._check_route_num(routes.split(',')):
+            if not self._check_route_num(routes.split(';')):
                 raise ValueError('entryLineNum != route num')
         else:
             raise ValueError('routes type must be str or list or tuple')
