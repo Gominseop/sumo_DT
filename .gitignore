@@ -166,3 +166,6 @@ files/*.settings.xml
 .idea/
 
 utils/datas
+utils/*.xml
+utils/*.*cfg
+report/

@@ -70,6 +70,7 @@ class DBManager(DBClient):
         col['laneNum21'] = ['int', 'NOT NULL']
         col['speed'] = ['float', 'NOT NULL']
         col['length'] = ['float', 'NOT NULL']
+        col['available'] = ['int', 'NOT NULL']
         key = dict()
         key['ic_id'] = 'primary'
         self.create_table('intersection_side', col, key)
@@ -260,16 +261,16 @@ class DBManager(DBClient):
             re = self.read_query(f"SELECT * FROM road WHERE id = '{rid}'")
         elif type(rid) == tuple or type(rid) == list:
             if len(rid) == 1:
-                re = self.read_query(f"SELECT * FROM road WHERE id = '{rid[0]}'")
+                re = self.read_query(f"SELECT * FROM road WHERE id = '{rid[0]}' AND available = 1")
             else:
-                re = self.read_query(f'SELECT * FROM road WHERE id in {tuple(rid)}')
+                re = self.read_query(f'SELECT * FROM road WHERE id in {tuple(rid)} AND available = 1')
         else:
             raise TypeError('type of id must be str or tuple:str or tuple:str')
         # 받은 정보를 위의 변수 class에 맞게 변경하여 return하는 것이 좋을 듯
 
         roads = []
         for r in re:
-            roads.append(Road(r[0], r[1], (r[2], r[3]), (r[4], r[5]), r[6], r[7], r[8], r[9]))
+            roads.append(Road(r[0], r[1], (r[2], r[3]), (r[4], r[5]), r[6], r[7], r[8], r[9], r[10]))
         print(f'road - road edge {rid} 읽어오기 성공')
         return roads
 
@@ -283,22 +284,22 @@ class DBManager(DBClient):
         if type(icid) == tuple or type(icid) == list:
             if len(icid) == 1:
                 re = self.read_query(
-                    f"SELECT * FROM road WHERE `node1_id` IN ('{icid[0]}') AND `node2_id` IN ('{icid[0]}')")
+                    f"SELECT * FROM road WHERE `node1_id` IN ('{icid[0]}') AND `node2_id` IN ('{icid[0]}') AND available = 1")
             else:
                 re = self.read_query(
-                    f"SELECT * FROM road WHERE `node1_id` IN {tuple(icid)} AND `node2_id` IN {tuple(icid)}")
+                    f"SELECT * FROM road WHERE `node1_id` IN {tuple(icid)} AND `node2_id` IN {tuple(icid)} AND available = 1")
         else:
             raise TypeError('type of id must be tuple:str or tuple:str')
         # 받은 정보를 위의 변수 class에 맞게 변경하여 return하는 것이 좋을 듯
 
         roads = []
         for r in re:
-            roads.append(Road(r[0], r[1], (r[2], r[3]), (r[4], r[5]), r[6], r[7], r[8], r[9]))
+            roads.append(Road(r[0], r[1], (r[2], r[3]), (r[4], r[5]), r[6], r[7], r[8], r[9], r[10]))
         print(f'road - {icid}를 연결하는 road edge 읽어오기 성공')
         return roads
 
     @check_db_setting
-    def add_road(self, road_id, name, ic1, ic1_side, ic2, ic2_side, laneNum12, laneNum21, speed, length):
+    def add_road(self, road_id, name, ic1, ic1_side, ic2, ic2_side, laneNum12, laneNum21, speed, length, available):
         """
         add load
         :param road_id: (str)
@@ -311,9 +312,10 @@ class DBManager(DBClient):
         :param laneNum21:
         :param speed:
         :param length:
+        :param available:
         :return:
         """
-        road = Road(road_id, name, (ic1, ic1_side), (ic2, ic2_side), laneNum12, laneNum21, speed, length)
+        road = Road(road_id, name, (ic1, ic1_side), (ic2, ic2_side), laneNum12, laneNum21, speed, length, available)
         self._add_road(road)
 
     @check_db_setting
@@ -342,18 +344,18 @@ class DBManager(DBClient):
 
         if None in road.side2:
             sql = f"""
-            INSERT INTO road(`id`, `name`, `node1_id`, `node1_index`, `laneNum12`, `laneNum21`, `speed`, `length`) 
+            INSERT INTO road(`id`, `name`, `node1_id`, `node1_index`, `laneNum12`, `laneNum21`, `speed`, `length`, `available`) 
             VALUES('{road.id}', '{road.name}', '{road.side1[0]}', '{road.side1[1]}', {road.laneNum12}, {road.laneNum21},
-            {road.speed}, {road.length})
+            {road.speed}, {road.length}, {road.available})
             """
         else:
             if not self._side_exist_check(road.side2):
                 raise ValueError('side2 is not exist')
             sql = f"""
             INSERT INTO road(`id`, `name`, `node1_id`, `node1_index`, `node2_id`, `node2_index`, 
-            `laneNum12`, `laneNum21`, `speed`, `length`)
+            `laneNum12`, `laneNum21`, `speed`, `length`, `available`)
              VALUES('{road.id}', '{road.name}', '{road.side1[0]}', '{road.side1[1]}', '{road.side2[0]}', 
-            '{road.side2[1]}', {road.laneNum12}, {road.laneNum21}, {road.speed}, {road.length})
+            '{road.side2[1]}', {road.laneNum12}, {road.laneNum21}, {road.speed}, {road.length}, {road.available})
             """
         self.write_query(sql, True)
         print(f"road - road relation '{road.id}' 추가 성공")

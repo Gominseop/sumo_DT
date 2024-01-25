@@ -110,7 +110,7 @@ class SideNode(NodePoint):
 
 
 class Road:
-    def __init__(self, rid, name, side1, side2, laneNum12, laneNum21, speed, length):
+    def __init__(self, rid, name, side1, side2, laneNum12, laneNum21, speed, length, available):
         self.id = rid
         self.name = name
         self.side1 = side1  # (icID, sID)
@@ -119,6 +119,7 @@ class Road:
         self.laneNum21 = laneNum21
         self.speed = speed
         self.length = length
+        self.available = available
 
     def show(self):
         print(f"id: {self.id}")
@@ -129,6 +130,7 @@ class Road:
         print(f"laneNum21: {self.laneNum21}")
         print(f"speed: {self.speed}")
         print(f"length: {self.length}")
+        print(f"available: {self.available}")
 
 
 class TLPhase:

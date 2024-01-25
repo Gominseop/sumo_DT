@@ -609,9 +609,9 @@ if __name__=="__main__":
     # net 구성
     sumogen.generate_net_file()
     # route 구성
-    sumogen.generate_route_file(f'{test_file}.net.xml', f'{test_file}.rou.xml', end=3600,
-                                seed=77, period=0.5, fringe_factor=100)
+    # sumogen.generate_route_file(f'{test_file}.net.xml', f'{test_file}.rou.xml', end=8000,
+    #                             seed=77, period=0.5, fringe_factor=100)
     # sumocfg 구성
     # sumogen.make_sumocfg(f'{test_file}.sumocfg', 0, 10000)
-    sumogen.make_sumocfg(f'{test_file}.sumocfg', 0, 5000, route_path=f'{test_file}.rou.xml')
+    # sumogen.make_sumocfg(f'{test_file}.sumocfg', 0, 5000, route_path=f'{test_file}.rou.xml')
     print('finish')
