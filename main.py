@@ -58,7 +58,8 @@ class WindowClass(QtWidgets.QMainWindow):
         self.ui.output_log.append(f'{datetime.now()} : read - intersections')
 
         tlids = set([ic.tlLogic for ic in ics])
-        tlids.remove('-1')
+        if '-1' in tlids:
+            tlids.remove('-1')
         tlids = tuple(tlids)
         tls = self.dbm.read_tllight(tlids)
         self.ui.output_log.append(f'{datetime.now()} : read - traffic light logics')

@@ -2,7 +2,7 @@ import time
 import json
 from datetime import datetime
 from utils.db_client import DBClient
-from utils.element import SideNode, TLPhase, ICNode, Road, TLLogic, EdgeParameter, Output
+from utils.element import SideNode, TLPhase, ICNode, Road, TLLogic, TLPlan, TLLight, EdgeParameter, Output
 
 
 def check_db_setting(func):
@@ -66,8 +66,7 @@ class DBManager(DBClient):
         col['node1_index'] = ['string', 'NOT NULL']
         col['node2_id'] = ['string', 'NULL']
         col['node2_index'] = ['string', 'NULL']
-        col['laneNum12'] = ['int', 'NOT NULL']
-        col['laneNum21'] = ['int', 'NOT NULL']
+        col['laneNum'] = ['int', 'NOT NULL']
         col['speed'] = ['float', 'NOT NULL']
         col['length'] = ['float', 'NOT NULL']
         col['available'] = ['int', 'NOT NULL']
@@ -95,33 +94,52 @@ class DBManager(DBClient):
         """
         self.write_query(sql, True)
 
+    def _read_tllight(self, tlid):
+        re_tl = self.read_query(f"SELECT * FROM traffic_light WHERE id = '{tlid}'")[0]
+        # get plans and set plan
+        re_pnl = self.read_query(f"SELECT plan_id FROM traffic_light_planlist WHERE tllogic_id = '{tlid}'")
+        tlplans = {}
+        tlplan = None
+        # dict 형식으로 list를 들고 있어서 빠르게 접근해서 사용할 수 있을 것 같음
+        for pnl in re_pnl:
+            re_pn = self.read_query(
+                f"SELECT from_time, program_id FROM traffic_light_plan WHERE plan_id = '{pnl[0]}'")
+            tlplans[pnl[0]] = TLPlan(pnl[0], re_pn)
+            if pnl[0] == re_tl[2]:
+                tlplan = tlplans[pnl[0]]
+        re_pg = self.read_query(f"SELECT * FROM traffic_light_program WHERE tl_id = '{tlid}'")
+        tlpgs = {}
+        for pg in re_pg:
+            tlpgs[pg[1]] = TLLogic(pg[0], pg[1], pg[2], pg[4], pg[5], TLPhase(pg[5], json.loads(pg[6])),
+                                   period=pg[3])
+        return TLLight(tlid, re_tl[1], tlplan, tlplans, tlpgs, yellow=re_tl[3], all_red=re_tl[4])
+
     @check_db_setting
     def read_tllight(self, tlid):
         """
-        read_tllight
+        read_tllight, with plan and programs
         :param tlid: (str) or (tuple:str) or (list:str)
         :return:
         """
+        tllights = []
         if type(tlid) == str:
-            re = self.read_query(f"SELECT * FROM traffic_light WHERE id = '{tlid}'")
+            tllights.append(self._read_tllight(tlid))
         elif type(tlid) == tuple or type(tlid) == list:
             if len(tlid) == 1:
-                re = self.read_query(f"SELECT * FROM traffic_light WHERE id = '{tlid[0]}'")
+                tllights.append(self._read_tllight(tlid[0]))
             else:
-                re = self.read_query(f'SELECT * FROM traffic_light WHERE id in {tuple(tlid)}')
+                for tl in tlid:
+                    tllights.append(self._read_tllight(tl))
         else:
             raise TypeError('type of id must be str or tuple:str or tuple:str')
-        # 받은 정보를 위의 변수 class에 맞게 변경하여 return하는 것이 좋을 듯
 
-        tllogics = []
-        for r in re:
-            tllogics.append(TLLogic(r[0], r[1], r[2], r[3], r[4], json.loads(r[5])))
         print(f'tllight - traffic logic {tlid} 읽어오기 성공')
-        return tllogics
+        return tllights
 
     @check_db_setting
     def add_tllight(self, tlID=None, programID='tll_id', tl_type='static', offset=0, shape=None, phases=None):
         """
+        (old version, not working)
         add_tllight
         :param tlID: (str) tllight id
         :param programID: (str) tllight program id
@@ -270,7 +288,7 @@ class DBManager(DBClient):
 
         roads = []
         for r in re:
-            roads.append(Road(r[0], r[1], (r[2], r[3]), (r[4], r[5]), r[6], r[7], r[8], r[9], r[10]))
+            roads.append(Road(r[0], r[1], (r[2], r[3]), (r[4], r[5]), r[6], r[7], r[8], r[9]))
         print(f'road - road edge {rid} 읽어오기 성공')
         return roads
 
@@ -294,12 +312,12 @@ class DBManager(DBClient):
 
         roads = []
         for r in re:
-            roads.append(Road(r[0], r[1], (r[2], r[3]), (r[4], r[5]), r[6], r[7], r[8], r[9], r[10]))
+            roads.append(Road(r[0], r[1], (r[2], r[3]), (r[4], r[5]), r[6], r[7], r[8], r[9]))
         print(f'road - {icid}를 연결하는 road edge 읽어오기 성공')
         return roads
 
     @check_db_setting
-    def add_road(self, road_id, name, ic1, ic1_side, ic2, ic2_side, laneNum12, laneNum21, speed, length, available):
+    def add_road(self, road_id, name, ic1, ic1_side, ic2, ic2_side, laneNum, speed, length, available):
         """
         add load
         :param road_id: (str)
@@ -308,14 +326,13 @@ class DBManager(DBClient):
         :param ic1_side: (str)
         :param ic2: (str)
         :param ic2_side: (str)
-        :param laneNum12:
-        :param laneNum21:
+        :param laneNum:
         :param speed:
         :param length:
         :param available:
         :return:
         """
-        road = Road(road_id, name, (ic1, ic1_side), (ic2, ic2_side), laneNum12, laneNum21, speed, length, available)
+        road = Road(road_id, name, (ic1, ic1_side), (ic2, ic2_side), laneNum, speed, length, available)
         self._add_road(road)
 
     @check_db_setting
@@ -344,8 +361,8 @@ class DBManager(DBClient):
 
         if None in road.side2:
             sql = f"""
-            INSERT INTO road(`id`, `name`, `node1_id`, `node1_index`, `laneNum12`, `laneNum21`, `speed`, `length`, `available`) 
-            VALUES('{road.id}', '{road.name}', '{road.side1[0]}', '{road.side1[1]}', {road.laneNum12}, {road.laneNum21},
+            INSERT INTO road(`id`, `name`, `node1_id`, `node1_index`, `laneNum`, `speed`, `length`, `available`) 
+            VALUES('{road.id}', '{road.name}', '{road.side1[0]}', '{road.side1[1]}', {road.laneNum},
             {road.speed}, {road.length}, {road.available})
             """
         else:
@@ -355,7 +372,7 @@ class DBManager(DBClient):
             INSERT INTO road(`id`, `name`, `node1_id`, `node1_index`, `node2_id`, `node2_index`, 
             `laneNum12`, `laneNum21`, `speed`, `length`, `available`)
              VALUES('{road.id}', '{road.name}', '{road.side1[0]}', '{road.side1[1]}', '{road.side2[0]}', 
-            '{road.side2[1]}', {road.laneNum12}, {road.laneNum21}, {road.speed}, {road.length}, {road.available})
+            '{road.side2[1]}', {road.laneNum}, {road.speed}, {road.length}, {road.available})
             """
         self.write_query(sql, True)
         print(f"road - road relation '{road.id}' 추가 성공")
@@ -525,28 +542,29 @@ if __name__ == '__main__':
     # dbm.add_intersection(f'3500059800', f'리라유치원앞교차로', 674.7659, -102.9688, shape=3, side_points=side)
     # dbm.commit()
 
-    tlids = ['3500006301', '3500006600', '3500006650', '3500006660', '3500006700',
-             '3500006901', '3500007100', '3500007300', '3500007350', '3500007500',
-             '3500007700', '3500007900', '3500008000', '3500051802', '3500051804',
-             '3500058500', '3500058550', '3500058700', '3500058900', '3500059300',
-             '3500059350', '3500059800', '3500059850', '3500060100', '3500060600',
-             '3500060650', '3500060660', '3500060800', '3500060850', '3500060860',
-             '3500062100', '3500062500', '3500062550', '3500065800', '3500065850',
-             '3500302300', '3510000200', '3510000250', '3510000300', '3510000400',
-             '3510021200', '3510021250', '3510021300', '3510021350', '3510021400',
-             '3510021500', '3510021700']
-
-    case = 1
-    for tlid in tlids:
-        if case == 0:
-            dbm.set_tl_in_intersection(tlid, tlid)
-        elif case == 1:
-            dbm.set_tl_in_intersection(tlid, tlid + '_1')
-        elif case == 2:
-            dbm.set_tl_in_intersection(tlid, tlid + '_2')
-        elif case == 3:
-            dbm.set_tl_in_intersection(tlid, tlid + '_3')
-    dbm.commit()
+    a = dbm.read_tllight(['3500006301', '3500006600', '3500006650', '3500006660', '3500006700'])[0]
+    # tlids = ['3500006301', '3500006600', '3500006650', '3500006660', '3500006700',
+    #          '3500006901', '3500007100', '3500007300', '3500007350', '3500007500',
+    #          '3500007700', '3500007900', '3500008000', '3500051802', '3500051804',
+    #          '3500058500', '3500058550', '3500058700', '3500058900', '3500059300',
+    #          '3500059350', '3500059800', '3500059850', '3500060100', '3500060600',
+    #          '3500060650', '3500060660', '3500060800', '3500060850', '3500060860',
+    #          '3500062100', '3500062500', '3500062550', '3500065800', '3500065850',
+    #          '3500302300', '3510000200', '3510000250', '3510000300', '3510000400',
+    #          '3510021200', '3510021250', '3510021300', '3510021350', '3510021400',
+    #          '3510021500', '3510021700']
+#
+    # case = 1
+    # for tlid in tlids:
+    #     if case == 0:
+    #         dbm.set_tl_in_intersection(tlid, tlid)
+    #     elif case == 1:
+    #         dbm.set_tl_in_intersection(tlid, tlid + '_1')
+    #     elif case == 2:
+    #         dbm.set_tl_in_intersection(tlid, tlid + '_2')
+    #     elif case == 3:
+    #         dbm.set_tl_in_intersection(tlid, tlid + '_3')
+    # dbm.commit()
 
     # node1 = 3500302300
     # node2 = 3500007100

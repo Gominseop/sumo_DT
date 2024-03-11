@@ -1,4 +1,5 @@
 import json
+from datetime import time, datetime, timedelta
 
 
 class NodePoint:
@@ -110,13 +111,12 @@ class SideNode(NodePoint):
 
 
 class Road:
-    def __init__(self, rid, name, side1, side2, laneNum12, laneNum21, speed, length, available):
+    def __init__(self, rid, name, side1, side2, laneNum, speed, length, available):
         self.id = rid
         self.name = name
         self.side1 = side1  # (icID, sID)
         self.side2 = side2  # (icID, sID)
-        self.laneNum12 = laneNum12
-        self.laneNum21 = laneNum21
+        self.laneNum = laneNum
         self.speed = speed
         self.length = length
         self.available = available
@@ -126,8 +126,7 @@ class Road:
         print(f"name: {self.name}")
         print(f"side1: {self.side1}")
         print(f"side2: {self.side2}")
-        print(f"laneNum12: {self.laneNum12}")
-        print(f"laneNum21: {self.laneNum21}")
+        print(f"laneNum: {self.laneNum}")
         print(f"speed: {self.speed}")
         print(f"length: {self.length}")
         print(f"available: {self.available}")
@@ -137,9 +136,13 @@ class TLPhase:
     """
     phase: R r L g G Y 중 하나를 shape만큼 사용
     """
-    def __init__(self, shape=4):
+    def __init__(self, shape=4, phases=None):
+        # phases is None or dict
         self.shape = shape
         self.phases = []
+        if phases is not None:
+            for phase in phases.values():
+                self.phases.append(phase)
 
     def show(self):
         print('shape: ', self.shape)
@@ -152,7 +155,7 @@ class TLPhase:
         tmp = dict()
         for i, v in enumerate(self.phases):
             tmp[str(i)] = v
-        return json.dumps(tmp)
+        return tmp
 
     def _check_state(self, state):
         if self.shape != len(state):
@@ -177,15 +180,22 @@ class TLPhase:
     def remove(self, duration, state):
         self.phases.remove({"duration": duration, "state": state})
 
-
+# 확장
 class TLLogic:
-    def __init__(self, tid, programID, tltype, offset, shape, phases):
-        self.id = tid
+    # TL program
+    def __init__(self, tid, programID, tltype, offset, shape, phases, period=None):
+        self.tl_id = tid
         self.programID = programID
         self.type = tltype
         self.offset = offset
         self.shape = shape
         self.phases = phases
+        self.period = 0
+        if period is None:
+            for phase in phases.tlphase().values():
+                self.period += phase["duration"]
+        else:
+            self.period = period
 
     def show(self):
         print('id: ', self.id)
@@ -194,6 +204,70 @@ class TLLogic:
         print('offset: ', self.offset)
         print('shape: ', self.shape)
         print('phases: ', self.phases)
+        print('period: ', self.period)
+
+
+class TLPlan:
+    def __init__(self, plan_id, time_set=None):
+        self.id = plan_id
+        self.time_set = []
+        if time_set is not None:
+            for ts in time_set:
+                # if ts[0] is str:
+                #     self.time_set.append([datetime.strptime(ts[0], '%H:%M:%S').time(), ts[1]])
+                self.time_set.append(ts)
+
+    def show(self):
+        print('plan_id: ', self.id)
+        for i, ts in enumerate(self.time_set):
+            print(f'{ts[0]}: {ts[1]}')
+        return self.id, self.time_set
+
+    @property
+    def tlplans(self):
+        tmp = dict()
+        self.time_set.sort(key=lambda x: x[0])
+        for i, v in enumerate(self.time_set):
+            tmp[v[0]] = v[1]
+        return tmp
+
+    def append(self, from_time, program_id):
+        # if from_time is str:
+        #     self.time_set.append([datetime.strptime(from_time, '%H:%M:%S').time(), program_id])
+        self.time_set.append([from_time, program_id])
+
+    def pop(self):
+        self.time_set.pop()
+
+    def insert(self, position, from_time, program_id):
+        # if from_time is str:
+        #     target = [time.strptime(from_time, '%H:%M:%S'), program_id]
+        self.time_set.insert(position, [from_time, program_id])
+
+    def remove(self, from_time, program_id):
+        self.time_set.remove([from_time, program_id])
+
+
+class TLLight:
+    def __init__(self, tid, shape, plan, plan_list, program_list, yellow=4, all_red=0):
+        self.id = tid
+        self.shape = shape
+        self.plan = plan
+        self.plan_list = plan_list
+        self.program = None
+        self.program_list = program_list
+        self.yellow = yellow
+        self.all_red = all_red
+
+    def show(self):
+        print('id: ', self.id)
+        print('shape: ', self.shape)
+        print('plan: ', self.plan)
+        print('plan_list: ', self.plan_list)
+        print('program: ', self.program)
+        print('program_list: ', self.program_list)
+        print('yellow: ', self.yellow)
+        print('all_red: ', self.all_red)
 
 
 class Parameter:

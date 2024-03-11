@@ -152,6 +152,6 @@ if __name__ == '__main__':
         category = 0
         e_time = datetime(2024, 1, 23, 0, 0, 0)
         event_type = 2  # 0: 도로 감소, 1: 도로 추가, 2: 신호 변경 등
-        target = '3'  # traffic 뒤 자리
+        target = '0'  # traffic 뒤 자리
         control_type = 1  # 0 부분, 1 전체
         event_process3(event_id, o_time, category, event_type, target, control_type, e_time)

@@ -4,6 +4,7 @@ import random
 import subprocess
 import os
 import sys
+from datetime import time, datetime
 import xml.etree.ElementTree as ET
 from xml.etree.ElementTree import Element, SubElement, ElementTree
 sys.path.append('utils')
@@ -82,16 +83,50 @@ class SUMOGenerator:
         self.connection[(road.side1, road.side2)] = road
         self.road[road.id] = road
 
-    def add_road_by_info(self, rid, name, side1, side2, laneNum12, laneNum21, speed, length):
-        rd = Road(rid, name, side1, side2, laneNum12, laneNum21, speed, length)
+    def add_road_by_info(self, rid, name, side1, side2, laneNum, speed, length):
+        rd = Road(rid, name, side1, side2, laneNum, speed, length)
         self.connection[(side1, side2)] = rd
         self.road[rid] = rd
 
-    def add_tllogic_by_tl(self, tllogic):
-        self.tllogic[tllogic.id] = tllogic
+    def add_tllogic_by_tl(self, tllight):
+        self.tllogic[tllight.id] = tllight
 
-    def add_tllogic_by_info(self, tid, programID, tltype, offset, shape, phases):
-        self.tllogic[tid] = TLLogic(tid, programID, tltype, offset, shape, phases)
+    def add_tllogic_by_info(self, tid, shape, plan, plan_list, program_list, yellow, all_red):
+        self.tllogic[tid] = TLLogic(tid, shape, plan, plan_list, program_list, yellow, all_red)
+
+    def get_tllogic_default_program(self, tid):
+        ttime = datetime.now().time()
+        tplan = self.tllogic[tid].plan
+        tpid = None
+        a = tplan.tlplans
+        for ptime, pid in tplan.tlplans.items():
+            if ttime >= datetime.strptime(ptime, '%H:%M:%S').time():
+                tpid = pid
+        return self.tllogic[tid].program_list[tpid]
+
+    def set_tllogic_plan(self, tid, plan_id):
+        if plan_id not in self.tllogic[tid].plan_list:
+            print("plan id not in plan list")
+            return False
+        self.tllogic[tid].plan = self.tllogic[tid].plan_list[plan_id]
+
+    def set_tllogic_program_default(self, tid):
+        self.tllogic[tid].program = None
+
+    def set_tllogic_program_by_id(self, tid, program_id):
+        self.tllogic[tid].program = self.tllogic[tid].program_list[program_id]
+
+    def set_tllogic_program_by_time(self, tid, target_time):
+        ttime = target_time
+        if target_time is str:
+            ttime = time.strptime(ttime, '%H:%M:%S')
+        tplan = self.tllogic[tid].plan
+
+        tpid = None
+        for ptime, pid in tplan.tlplans.items():
+            if ttime >= ptime:
+                tpid = pid
+        self.tllogic[tid].program = self.tllogic[tid].program_list[tpid]
 
     # 다른 확장이 생기게 되면, addition을 위한 class가 필요
     def add_addition_by_info(self):
@@ -138,13 +173,9 @@ class SUMOGenerator:
                     edg.write(f'\n')
             # road 생성
             for i2i, road in self.connection.items():
-                if road.laneNum12 != 0:
+                if road.laneNum != 0:
                     edg.write(f'   <edge id="{road.id}_{i2i[0][0]}_{i2i[1][0]}" from="{i2i[0][0]}_{i2i[0][1]}" '
-                              f'to="{i2i[1][0]}_{i2i[1][1]}" numLanes="{road.laneNum12}" speed="{road.speed}" '
-                              f'length="{road.length}"/>\n')
-                if road.laneNum21 != 0:
-                    edg.write(f'   <edge id="{road.id}_{i2i[1][0]}_{i2i[0][0]}" from="{i2i[1][0]}_{i2i[1][1]}" '
-                              f'to="{i2i[0][0]}_{i2i[0][1]}" numLanes="{road.laneNum21}" speed="{road.speed}" '
+                              f'to="{i2i[1][0]}_{i2i[1][1]}" numLanes="{road.laneNum}" speed="{road.speed}" '
                               f'length="{road.length}"/>\n')
                 edg.write(f'\n')
             edg.write(f'</edges>')
@@ -285,15 +316,21 @@ class SUMOGenerator:
         return connection_path
 
     def generate_tll_file(self, tll_path):
+        # one main program set
         with open(tll_path, "w") as tll:
             tll.write(f'<tlLogics>\n')
             for tlid, tl in self.tllogic.items():
-                tll.write(f'   <tlLogic id="{tlid}" type="{tl.type}" programID="{tl.programID}" offset="{tl.offset}">\n')
+                if tl.program is None:
+                    pg = self.get_tllogic_default_program(tlid)
+                else:
+                    pg = tl.program
+
+                tll.write(f'   <tlLogic id="{tlid}" type="{pg.type}" programID="{pg.programID}" offset="{pg.offset}">\n')
                 con_targets = []
                 for sid, side in self.tl_ic[tlid].sides.items():
                     con_targets.append(side.route.replace(';', ',').split(','))
 
-                for idx, phase in tl.phases.items():
+                for idx, phase in pg.phases.tlphase.items():
                     phase_state = ''
                     # uturn 처리용 side id 구하기
                     sid = -1
@@ -567,11 +604,15 @@ if __name__=="__main__":
              '3500051804', '3500051802', '3500007400', '3500007100', '3500006900', '3500058700', '3500006901',
              '3500058500', '3500006600', '3500006650', '3500006660', '3500006800', '3500007300', '3500007350',
              '3500059300', '3500059800', '3500059850', '3500007700']
+    # icids = ['3500006301', '3500006700', '3500007500', '3500007900', '3500008000', '3510000200', '3510000250',
+    #          '3510000300']
     # 형산 교차로는 문제가 있어 제외 3500007700
     # 교통섬 X, 직진이 우회전 방해 가능
     ics = dbm.read_intersection(icids)
 
-    tlids = tuple(set([ic.tlLogic for ic in ics]))
+    tlids = set([ic.tlLogic for ic in ics])
+    tlids.remove('-1')
+    tlids = tuple(tlids)
     tls = dbm.read_tllight(tlids)
 
     roads = dbm.read_road_from_ic(icids)
@@ -589,7 +630,7 @@ if __name__=="__main__":
     # for output in outputs:
     #     sumogen.add_addition_by_output(output)
 
-    test_file = 'test_1'
+    test_file = 'test_2'
 
     # sumogen.generate_addition_file('C:/Users/FILAB/Desktop/arrange/5_code/SUMO/sumo_DT/test_folder/test_1.add.xml',
     #                                'test_1')
@@ -609,9 +650,9 @@ if __name__=="__main__":
     # net 구성
     sumogen.generate_net_file()
     # route 구성
-    # sumogen.generate_route_file(f'{test_file}.net.xml', f'{test_file}.rou.xml', end=8000,
-    #                             seed=77, period=0.5, fringe_factor=100)
+    sumogen.generate_route_file(f'{test_file}.net.xml', f'{test_file}.rou.xml', end=8000,
+                                seed=77, period=0.5, fringe_factor=100)
     # sumocfg 구성
     # sumogen.make_sumocfg(f'{test_file}.sumocfg', 0, 10000)
-    # sumogen.make_sumocfg(f'{test_file}.sumocfg', 0, 5000, route_path=f'{test_file}.rou.xml')
+    sumogen.make_sumocfg(f'{test_file}.sumocfg', 0, 5000, route_path=f'{test_file}.rou.xml')
     print('finish')
