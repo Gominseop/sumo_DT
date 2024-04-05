@@ -41,6 +41,13 @@ class SUMOGenerator:
         self.addtion = dict()
         self.tl_ic = dict()
 
+        # leaf 및 교통량 처리용
+        self.leaf_ic = dict()
+        self.leaf_road = {"source": dict(), "sink": dict()}
+
+        # traffic 처리용
+        self.traffic_interval = 60
+
         # uturn 신호 처리용
         self.u_check = dict()
 
@@ -87,6 +94,24 @@ class SUMOGenerator:
         rd = Road(rid, name, side1, side2, laneNum, speed, length)
         self.connection[(side1, side2)] = rd
         self.road[rid] = rd
+
+    def add_leaf_element(self, leaf_nodes, sources, sinks):
+        # 임시
+        for leaf_node in leaf_nodes:
+            self.leaf_ic[leaf_node.id] = leaf_node
+        for source in sources:
+            self.leaf_road["source"][source.id] = source
+        for sink in sinks:
+            self.leaf_road["sink"][sink.id] = sink
+
+    def set_road_traffic(self, road_traffic, target):
+        for rid, traffic in road_traffic.items():
+            if target == "between":
+                self.road[rid].traffic = traffic
+            elif target == "source":
+                self.leaf_road["source"][rid].traffic = traffic
+            elif target == "sink":
+                self.leaf_road["sink"][rid].traffic = traffic
 
     def add_tllogic_by_tl(self, tllight):
         self.tllogic[tllight.id] = tllight
@@ -153,10 +178,19 @@ class SUMOGenerator:
                 for sid, side in ic.sides.items():
                     nod.write(f'   <node id="{icid}_{sid}" x="{ic.x+side.x}" y="{ic.y+side.y}" type="priority"/>\n')
                 nod.write(f'\n')
+            # leaf 추가
+            self._generate_leaf_node(nod)
             nod.write(f'</nodes>')
         print(f'nod.xml - {node_path} 생성 완료')
         self.file_paths['node'] = node_path
         return node_path
+
+    def _generate_leaf_node(self, f):
+        # 임시
+        for icid, ic in self.leaf_ic.items():
+            for sid, side in ic.sides.items():
+                f.write(f'   <node id="{icid}_{sid}" x="{ic.x+side.x}" y="{ic.y+side.y}" type="priority"/>\n')
+        # intersection 까지 넣어서 완전한 통일성을 할지는 고려 필요 (실재로 사용하지는 않음)
 
     def generate_edge_file(self, edge_path):
         with open(edge_path, "w") as edg:
@@ -165,23 +199,106 @@ class SUMOGenerator:
             for icid, ic in self.icnodes.items():
                 for sid, side in ic.sides.items():
                     if side.entryLaneNum != 0:
-                        edg.write(f'   <edge id="{icid}_{sid}i" from="{icid}_{sid}" to="{icid}" '
+                        edg.write(f'   <edge id="{icid}_{sid}_i" from="{icid}_{sid}" to="{icid}" '
                                   f'numLanes="{side.entryLaneNum}" speed="{side.speed}" length="{side.length}"/>\n')
                     if side.exitLaneNum != 0:
-                        edg.write(f'   <edge id="{icid}_{sid}o" from="{icid}" to="{icid}_{sid}" '
+                        edg.write(f'   <edge id="{icid}_{sid}_o" from="{icid}" to="{icid}_{sid}" '
                                   f'numLanes="{side.exitLaneNum}" speed="{side.speed}" length="{side.length}"/>\n')
                     edg.write(f'\n')
             # road 생성
             for i2i, road in self.connection.items():
                 if road.laneNum != 0:
-                    edg.write(f'   <edge id="{road.id}_{i2i[0][0]}_{i2i[1][0]}" from="{i2i[0][0]}_{i2i[0][1]}" '
+                    # old node id, {road.id}_{i2i[0][0]}_{i2i[1][0]}
+                    edg.write(f'   <edge id="{road.id}" from="{i2i[0][0]}_{i2i[0][1]}" '
                               f'to="{i2i[1][0]}_{i2i[1][1]}" numLanes="{road.laneNum}" speed="{road.speed}" '
-                              f'length="{road.length}"/>\n')
+                              f' length="{road.length}"/>\n')
                 edg.write(f'\n')
+            # leaf 생성
+            self._generate_leaf_road(edg)
             edg.write(f'</edges>')
         print(f'edg.xml - {edge_path} 생성 완료')
         self.file_paths['edge'] = edge_path
         return edge_path
+
+    def _generate_leaf_road(self, f):
+        for rid, source in self.leaf_road["source"].items():
+            if source.laneNum != 0:
+                f.write(f'   <edge id="{rid}" from="{source.side1[0]}_{source.side1[1]}" '
+                        f'to="{source.side2[0]}_{source.side2[1]}" numLanes="{source.laneNum}" speed="{source.speed}" '
+                        f'length="{source.length}"/>\n')
+        for rid, sink in self.leaf_road["sink"].items():
+            if sink.laneNum != 0:
+                f.write(f'   <edge id="{rid}" from="{sink.side1[0]}_{sink.side1[1]}" '
+                        f'to="{sink.side2[0]}_{sink.side2[1]}" numLanes="{sink.laneNum}" speed="{sink.speed}" '
+                        f'length="{sink.length}"/>\n')
+        # intersection 까지 넣어서 완전한 통일성을 할지는 고려 필요 (실재로 사용하지는 않음)
+
+    def generate_route_file(self, route_path, flow_path, detector_path=None, traffic_path=None, interval=60, repeat=1,
+                            param=True, insert_method="best", insert_speed="max"):
+
+        if detector_path is None:
+            dpath = self.file_paths["detector"]
+        else:
+            dpath = self.generate_detector_file(detector_path)
+        if traffic_path is None:
+            tpath = self.file_paths["traffic"]
+        else:
+            tpath = self.generate_flow_file(traffic_path)
+
+        router_path = os.environ['SUMO_HOME'] + '/tools/detector/flowrouter.py'
+        commend = (f'python "{router_path}" -o {route_path} -e {flow_path} -d {dpath} -f {tpath} '
+                   f'-n {self.file_paths["network"]} -i {interval}')
+        if param:
+            commend += f'''
+             --params="departLane="\\"best\\"" departSpeed="\\"max\\"""
+            '''
+        if repeat != 1:
+            commend += f' --limit {repeat}'
+
+        result = subprocess.call(commend)
+        self.file_paths["route"] = route_path
+        self.file_paths["flow"] = flow_path
+        return route_path, flow_path
+
+    def generate_detector_file(self, detector_path):
+        with open(detector_path, "w") as det:
+            det.write("<detectors>\n")
+
+            # lane 수 만큼 n빵 or 0번 차선에 몰빵
+            for rid, r in self.road.items():
+                det.write(f'   <detectorDefinition id="detector_{rid}" lane="{rid}_0" '
+                          f'pos="{r.length/2}" type="between"/>\n')
+            for sid, s in self.leaf_road["source"].items():
+                det.write(f'   <detectorDefinition id="detector_{sid}" lane="{sid}_0" '
+                          f'pos="{s.length/20}" type="source"/>\n')
+            for kid, k in self.leaf_road["sink"].items():
+                det.write(f'   <detectorDefinition id="detector_{kid}" lane="{kid}_0" '
+                          f'pos="{-k.length/20}" type="sink"/>\n')
+            det.write("</detectors>")
+
+        self.file_paths["detector"] = detector_path
+        return detector_path
+
+    def generate_flow_file(self, traffic_path):
+        with open(traffic_path, "w") as tra:
+            tra.write("Detector;Time;qPKW;vPKW\n")
+            for rid, r in self.road.items():
+                ct = 0
+                for a in r.traffic:
+                    tra.write(f'detector_{rid};{ct};{a.volume};{int(a.speed)}\n')
+                    ct += a.interval
+            for sid, s in self.leaf_road["source"].items():
+                ct = 0
+                for b in s.traffic:
+                    tra.write(f'detector_{sid};{ct};{b.volume};{int(b.speed)}\n')
+                    ct += b.interval
+            for kid, k in self.leaf_road["sink"].items():
+                ct = 0
+                for c in k.traffic:
+                    tra.write(f'detector_{kid};{ct};{c.volume};{int(c.speed)}\n')
+                    ct += c.interval
+        self.file_paths["traffic"] = traffic_path
+        return traffic_path
 
     def generate_connection_file(self, connection_path):
         # u턴 추가 지역
@@ -210,7 +327,7 @@ class SUMOGenerator:
                             if b == '-1':
                                 rsl[q] = []
 
-                    # 각 R, S 방향으로가는 count 정리
+                    # 각 R, S, L 방향으로가는 count 정리
                     for j, rr in enumerate(rsl[0]):
                         right[rsl[0][j]].append((sid, side.route.count(f'R{j}')))
                     for k, sr in enumerate(rsl[1]):
@@ -286,21 +403,21 @@ class SUMOGenerator:
                             continue
                         for r, idx in rs:
                             if r == 'R':
-                                conn.write(f'   <connection from="{icid}_{sid}i" to="{icid}_{rsl[rdic[r]][int(idx)]}o" '
+                                conn.write(f'   <connection from="{icid}_{sid}_i" to="{icid}_{rsl[rdic[r]][int(idx)]}_o" '
                                            f'fromLane="{i}" toLane="{rsl_num[sid]["r"][int(idx)]}"/>\n')
                                 rsl_num[sid]["r"][int(idx)] += 1
                             elif r == 'S':
-                                conn.write(f'   <connection from="{icid}_{sid}i" to="{icid}_{rsl[rdic[r]][int(idx)]}o" '
+                                conn.write(f'   <connection from="{icid}_{sid}_i" to="{icid}_{rsl[rdic[r]][int(idx)]}_o" '
                                            f'fromLane="{i}" toLane="{rsl_num[sid]["s"][int(idx)]}"/>\n')
                                 rsl_num[sid]["s"][int(idx)] += 1
                             elif r == 'L':
-                                conn.write(f'   <connection from="{icid}_{sid}i" to="{icid}_{rsl[rdic[r]][int(idx)]}o" '
+                                conn.write(f'   <connection from="{icid}_{sid}_i" to="{icid}_{rsl[rdic[r]][int(idx)]}_o" '
                                            f'fromLane="{i}" toLane="{rsl_num[sid]["l"][int(idx)]}"/>\n')
                                 rsl_num[sid]["l"][int(idx)] -= 1
                             elif r == 'U':
                                 # conn.write(f'   <connection from="{icid}_{sid}i" to="{icid}_{rsl[rdic[r]]}o" '
                                 #            f'fromLane="{i}" toLane="0"/>\n')
-                                conn.write(f'   <connection from="{icid}_{sid}i" to="{icid}_{rsl[rdic[r]][int(idx)]}o" '
+                                conn.write(f'   <connection from="{icid}_{sid}_i" to="{icid}_{rsl[rdic[r]][int(idx)]}_o" '
                                            f'fromLane="{i}" toLane="{ic.sides[rsl[rdic[r]][int(idx)]].exitLaneNum-1}"/>\n')
                                 # 자기 회전 여부
                                 #if sid == rsl[rdic[r]]:
@@ -455,7 +572,7 @@ class SUMOGenerator:
 
     # 생성후에 route 부분에서 namespace나 형식 부분은 제거야해 돌아감
     # 직접 생성하면 이것을 사용하지 않음 / 랜덤 생성
-    def generate_route_file(self, net_path, route_path, begin=0, end=3600, rand=False, seed=-1, period=1, fringe_factor=1):
+    def generate_random_route_file(self, net_path, route_path, begin=0, end=3600, rand=False, seed=-1, period=1, fringe_factor=1):
         ops = ['-n', net_path, '-o', route_path]
         if begin != 0:
             ops.append('-b')
@@ -474,7 +591,7 @@ class SUMOGenerator:
         if fringe_factor != 1:
             ops.append('--fringe-factor')
             ops.append(fringe_factor)
-        randomTrips.main(randomTrips.get_options(['-n', net_path, '-o', route_path]))
+        randomTrips.main(randomTrips.get_options(ops))
 
         # #file_path = 'C:/Users/FILAB/anaconda3/envs/sumo/Lib/site-packages/sumo/tools/randomTrips.py'
         # file_path = os.environ['SUMO_HOME'] + '/randomTrips.py'
@@ -525,17 +642,21 @@ class SUMOGenerator:
         self.file_paths['network'] = network_path
         return netccfg_path
 
-    def make_sumocfg(self, sumocfg_path, time_begin, time_end, route_path='',
+    def make_sumocfg(self, sumocfg_path, time_begin, time_end,
                      summary_path='', summary_period=100, queue_path='', queue_period=100,
                      edge_path='', lane_path='', **file_paths):
         with open(sumocfg_path, "w") as net:
             net.write(f'<configuration>\n')
             net.write(f'   <input>\n')
             net.write(f'      <net-file value="{self.file_paths["network"]}"/>\n')
-            if route_path != '':
-                net.write(f'      <route-files value="{route_path}"/>\n')
+            # if route_path != '':
+            #     net.write(f'      <route-files value="{route_path}"/>\n')
+
+            add_file = f'{self.file_paths["route"]}, {self.file_paths["flow"]}'
             if 'addition' in self.file_paths:
-                net.write(f'      <additional-files value="{self.file_paths["addition"]}"/>\n')
+                add_file += f', {self.file_paths["addition"]}'
+            net.write(f'      <additional-files value="{add_file}"/>\n')
+
             net.write(f'   </input>\n')
             net.write(f'   <output>\n')
             if self.summary != -1 and 'summary' in file_paths:
@@ -596,28 +717,45 @@ if __name__=="__main__":
 
     # 정보 불러오기
     # icids = ['3500007700']
-    icids = ['3500006301', '3500006700', '3500007500', '3500007900', '3500008000', '3510000200', '3510000250',
-             '3510000300', '3510000400', '3510000450', '3510021700', '3510021750', '3510021500', '3510021400',
-             '3500065800', '3500065850', '3500062500', '3500062550', '3510021350', '3510021300', '3510021200',
-             '3510021250', '3500062100', '3500060600', '3500060650', '3500060660', '3500062400', '3500060100',
-             '3500060800', '3500058900', '3500060850', '3500060860', '3500059350', '3500058550', '3500302300',
-             '3500051804', '3500051802', '3500007400', '3500007100', '3500006900', '3500058700', '3500006901',
-             '3500058500', '3500006600', '3500006650', '3500006660', '3500006800', '3500007300', '3500007350',
-             '3500059300', '3500059800', '3500059850', '3500007700']
     # icids = ['3500006301', '3500006700', '3500007500', '3500007900', '3500008000', '3510000200', '3510000250',
-    #          '3510000300']
+    #          '3510000300', '3510000400', '3510000450', '3510021700', '3510021750', '3510021500', '3510021400',
+    #          '3500065800', '3500065850', '3500062500', '3500062550', '3510021350', '3510021300', '3510021200',
+    #          '3510021250', '3500062100', '3500060600', '3500060650', '3500060660', '3500062400', '3500060100',
+    #          '3500060800', '3500058900', '3500060850', '3500060860', '3500059350', '3500058550', '3500302300',
+    #          '3500051804', '3500051802', '3500007400', '3500007100', '3500006900', '3500058700', '3500006901',
+    #          '3500058500', '3500006600', '3500006650', '3500006660', '3500006800', '3500007300', '3500007350',
+    #          '3500059300', '3500059800', '3500059850', '3500007700']
+    icids = ['3510021350', '3510021300', '3500058900', '3500007100', '3500060860', '3500060800',
+             '3500060850', '3510021200', '3510021250', '3500062100', '3500058700', '3500060600']
     # 형산 교차로는 문제가 있어 제외 3500007700
     # 교통섬 X, 직진이 우회전 방해 가능
     ics = dbm.read_intersection(icids)
 
     tlids = set([ic.tlLogic for ic in ics])
-    tlids.remove('-1')
+    if '-1' in tlids:
+        tlids.remove('-1')
     tlids = tuple(tlids)
     tls = dbm.read_tllight(tlids)
 
     roads = dbm.read_road_from_ic(icids)
 
     outputs = dbm.read_output('test')
+
+    # 원래라면 generator 내에서 처리하는 것이 맞지만, 흐름 확인을 위해 따로 처리
+    leafs, sources, sinks = dbm.read_virtual_ic_road(icids)
+
+    road_ids = []
+    source_ids = []
+    sink_ids = []
+    for road in roads:
+        road_ids.append(road.id)
+    for source in sources:
+        source_ids.append(source.id)
+    for sink in sinks:
+        sink_ids.append(sink.id)
+    road_traffic = dbm.read_road_traffic(road_ids)
+    source_traffic = dbm.read_road_traffic(source_ids)
+    sink_traffic = dbm.read_road_traffic(sink_ids)
 
     # generator 구성
     sumogen = SUMOGenerator()
@@ -629,6 +767,12 @@ if __name__=="__main__":
         sumogen.add_road_by_edge(road)
     # for output in outputs:
     #     sumogen.add_addition_by_output(output)
+
+    # 원래라면 생성 버튼을 누름과 동시에 뒤에서 처리되는 것이 맞지만, 흐름 확인을 위해 따로 처리
+    sumogen.add_leaf_element(leafs, sources, sinks)
+    sumogen.set_road_traffic(road_traffic, 'between')
+    sumogen.set_road_traffic(source_traffic, 'source')
+    sumogen.set_road_traffic(sink_traffic, 'sink')
 
     test_file = 'test_2'
 
@@ -650,9 +794,14 @@ if __name__=="__main__":
     # net 구성
     sumogen.generate_net_file()
     # route 구성
-    sumogen.generate_route_file(f'{test_file}.net.xml', f'{test_file}.rou.xml', end=8000,
-                                seed=77, period=0.5, fringe_factor=100)
+    # sumogen.generate_random_route_file(f'{test_file}.net.xml', f'{test_file}.rou.xml', end=110,
+    #                             seed=77, period=0.1, fringe_factor=2)
+    sumogen.generate_route_file(f'{test_file}_route.rou.xml', f'{test_file}_flow.rou.xml',
+                                f'{test_file}_detector.xml', f'{test_file}_traffic.txt',
+                                repeat=20)
+
     # sumocfg 구성
     # sumogen.make_sumocfg(f'{test_file}.sumocfg', 0, 10000)
-    sumogen.make_sumocfg(f'{test_file}.sumocfg', 0, 5000, route_path=f'{test_file}.rou.xml')
+    sumogen.make_sumocfg(f'{test_file}.sumocfg', 0, 5000,
+                         summary_path=f'{test_file}_summary.xml', edge_path=f'{test_file}_edge.xml')
     print('finish')

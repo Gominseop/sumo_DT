@@ -2,7 +2,7 @@ import time
 import json
 from datetime import datetime
 from utils.db_client import DBClient
-from utils.element import SideNode, TLPhase, ICNode, Road, TLLogic, TLPlan, TLLight, EdgeParameter, Output
+from utils.element import SideNode, TLPhase, ICNode, Road, TLLogic, TLPlan, TLLight, EdgeParameter, Output, Traffic
 
 
 def check_db_setting(func):
@@ -317,6 +317,110 @@ class DBManager(DBClient):
         return roads
 
     @check_db_setting
+    def read_virtual_ic_road(self, icid):
+        # 임시
+        """
+        read_tllight
+        :param icid: (tuple:str) or (list:str)
+        :return:
+        """
+        # sink search
+        if type(icid) == tuple or type(icid) == list:
+            if len(icid) == 1:
+                re = self.read_query(
+                    f"SELECT * FROM road WHERE `node1_id` IN ('{icid[0]}') AND `node2_id` NOT IN ('{icid[0]}') AND available = 1")
+            else:
+                re = self.read_query(
+                    f"SELECT * FROM road WHERE `node1_id` IN {tuple(icid)} AND `node2_id` NOT IN {tuple(icid)} AND available = 1")
+        else:
+            raise TypeError('type of id must be tuple:str or tuple:str')
+
+        leaf_ids = {}
+        sinks = []
+        for r in re:
+            sinks.append(Road(r[0], r[1], (r[2], r[3]), (r[4], r[5]), r[6], r[7], r[8], r[9]))
+            sinks[-1].category = "sink"
+            if r[4] in leaf_ids:
+                leaf_ids[r[4]].append(r[5])
+            else:
+                leaf_ids[r[4]] = [r[5]]
+
+        # source search
+        if type(icid) == tuple or type(icid) == list:
+            if len(icid) == 1:
+                re = self.read_query(
+                    f"SELECT * FROM road WHERE `node1_id` NOT IN ('{icid[0]}') AND `node2_id` IN ('{icid[0]}') AND available = 1")
+            else:
+                re = self.read_query(
+                    f"SELECT * FROM road WHERE `node1_id` NOT IN {tuple(icid)} AND `node2_id` IN {tuple(icid)} AND available = 1")
+        else:
+            raise TypeError('type of id must be tuple:str or tuple:str')
+
+        sources = []
+        for r in re:
+            sources.append(Road(r[0], r[1], (r[2], r[3]), (r[4], r[5]), r[6], r[7], r[8], r[9]))
+            sources[-1].category = "source"
+            if r[2] in leaf_ids:
+                leaf_ids[r[2]].append(r[3])
+            else:
+                leaf_ids[r[2]] = [r[3]]
+        print(f'road - {icid}의 외곽 road edge 읽어오기 성공')
+
+        # leaf intersection
+        id_tuple = tuple(leaf_ids)
+        if len(id_tuple) == 1:
+            re = self.read_query(f"SELECT * FROM intersection WHERE id = '{id_tuple[0]}'")
+        else:
+            re = self.read_query(f'SELECT * FROM intersection WHERE id in {tuple(id_tuple)}')
+
+        leafs = []
+        for r in re:
+            icnode = ICNode(r[0], r[2], r[3], r[5], r[1], r[4], r[6])
+            icnode.category = "virtual"
+            sides = self.read_query(f"SELECT * FROM intersection_side WHERE ic_id = '{icnode.id}' AND side_id in {tuple(leaf_ids[icnode.id])}")
+            for s in sides:
+                icnode.add_side_info(SideNode(s[1], s[2], s[3], s[4], s[5], s[6], s[7], s[8], s[9]))
+            icnode.shape = len(sides)
+            leafs.append(icnode)
+        print(f'intersection - leaf intersection node {icid}와 그 side 읽어오기 성공')
+
+        return leafs, sources, sinks
+
+    def read_road_traffic(self, rid, base_time=None, time_step=1):
+        """
+
+        :param rid: (tuple:str) or (list:str)
+        :param base_time: (datetime)
+        :param time_step: (int)
+        :return:
+        """
+        if base_time is None:
+            ttime = datetime.now()
+        else:
+            ttime = base_time
+
+        # 그냥 time step 만큼만 traffic에 저장하는걸로, 이후에는 history로 이동
+        if type(rid) == tuple or type(rid) == list:
+            if len(rid) == 1:
+                re = self.read_query(
+                    f'SELECT * FROM traffic WHERE `datetime` <= "{ttime.strftime("%Y-%m-%d %H:%M:%S")}" '
+                    f'AND `road_id` = "{rid[0]}" ORDER BY `datetime` ASC')
+            else:
+                re = self.read_query(
+                    f'SELECT * FROM traffic WHERE `datetime` <= "{ttime.strftime("%Y-%m-%d %H:%M:%S")}" '
+                    f'AND `road_id` IN {tuple(rid)} ORDER BY `datetime` ASC')
+        else:
+            raise TypeError('type of id must be tuple:str or tuple:str')
+
+        road_traffic = {}
+        for r in re:
+            if r[1] in road_traffic:
+                road_traffic[r[1]].append(Traffic(r[0], r[2], r[3], r[4], r[5]))
+            else:
+                road_traffic[r[1]] = [Traffic(r[0], r[2], r[3], r[4], r[5])]
+        return road_traffic
+
+    @check_db_setting
     def add_road(self, road_id, name, ic1, ic1_side, ic2, ic2_side, laneNum, speed, length, available):
         """
         add load
@@ -534,6 +638,10 @@ if __name__ == '__main__':
         'utf8'
     )
 
+    tmp = dbm.read_road_traffic(('3500006900-3500007100', '3500006900-3500058700', '3500007100-3500006900',
+                                 '3500007100-3500007400', '3500007100-3500058900', '3500007100-3500302300'))
+
+
     # u turn을 대상 차선의 가장 왼쪽으로 변경 할것
     # side = []
     # side.append(SideNode('0', 49.07469852, -9.574652225, 3, 2, 30, 50, 'S,S,L', '-1,2,1,0'))
@@ -542,7 +650,7 @@ if __name__ == '__main__':
     # dbm.add_intersection(f'3500059800', f'리라유치원앞교차로', 674.7659, -102.9688, shape=3, side_points=side)
     # dbm.commit()
 
-    a = dbm.read_tllight(['3500006301', '3500006600', '3500006650', '3500006660', '3500006700'])[0]
+    # a = dbm.read_tllight(['3500006301', '3500006600', '3500006650', '3500006660', '3500006700'])[0]
     # tlids = ['3500006301', '3500006600', '3500006650', '3500006660', '3500006700',
     #          '3500006901', '3500007100', '3500007300', '3500007350', '3500007500',
     #          '3500007700', '3500007900', '3500008000', '3500051802', '3500051804',
@@ -553,7 +661,7 @@ if __name__ == '__main__':
     #          '3500302300', '3510000200', '3510000250', '3510000300', '3510000400',
     #          '3510021200', '3510021250', '3510021300', '3510021350', '3510021400',
     #          '3510021500', '3510021700']
-#
+
     # case = 1
     # for tlid in tlids:
     #     if case == 0:

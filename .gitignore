@@ -167,9 +167,19 @@ files/*.settings.xml
 
 utils/datas
 utils/*.xml
+utils/*.txt
 utils/*.*cfg
 utils/osm_dict
 utils/sql_dummy.py
 utils/road_mig.py
+utils/route_t
 report/
-place
+place/
+dummy/
+files/
+old/
+video/
+test_folder/*.xml
+test_folder/*.*cfg
+test_folder/*.txt
+test_folder/*.json

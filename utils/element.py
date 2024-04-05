@@ -25,6 +25,7 @@ class ICNode(NodePoint):
         self.x = x
         self.y = y
         self.type = ictype
+        self.category = "actual"
         self.shape = shape
         self.tlLogic = tlLogic if tlLogic else "-1"
         self.sides = dict()
@@ -119,6 +120,8 @@ class Road:
         self.laneNum = laneNum
         self.speed = speed
         self.length = length
+        self.category = "between"
+        self.traffic = []
         self.available = available
 
     def show(self):
@@ -130,6 +133,15 @@ class Road:
         print(f"speed: {self.speed}")
         print(f"length: {self.length}")
         print(f"available: {self.available}")
+
+
+class Traffic:
+    def __init__(self, measure_time, week_code, volume, speed, interval):
+        self.time = measure_time
+        self.week = week_code
+        self.volume = volume
+        self.speed = speed
+        self.interval = interval
 
 
 class TLPhase:
@@ -184,7 +196,7 @@ class TLPhase:
 class TLLogic:
     # TL program
     def __init__(self, tid, programID, tltype, offset, shape, phases, period=None):
-        self.tl_id = tid
+        self.id = tid
         self.programID = programID
         self.type = tltype
         self.offset = offset
