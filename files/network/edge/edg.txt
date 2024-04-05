@@ -1,2 +1,0 @@
-    <edge id="string" from="nod id" to="nod id" numLane="int" speed="limit" name="name" length="float">
-            <lane index=""/>

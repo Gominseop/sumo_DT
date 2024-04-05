@@ -1,0 +1,18 @@
+randomtrip
+위치는 sumo/tools (=SUMOHOME)
+C:\Users\FILAB\anaconda3\envs\sumo\Lib\site-packages\sumo\tools\randomTrips.py
+
+옵션
+-n <net-file> (필수)
+-b <여행 시작 시간>
+-e <여행 끝 시간>
+-o <출력 파일 명>
+--random : 완전한 random은 아니지만 유사 random
+--seed : random seed를 설정하여 random
+--period : 도착률, 초당 몇대까지 생성될 수 있는지 주기, 1이면 초당 1대, 0.5면 2대, 차량수를 결정
+--fringe-factor : 네트워크 주변 (끝 부분)에서 생성되고 사라질 확률 업
+차량 종류도 생성은 가능
+
+예시
+test25.net.xml을 이용해서 0~3500사이에 0.5초마다 차량을 생성, 네트워크 끝에서 50배 높은 확률로 생성하는 test25.rou.xml 파일
+python C:\Users\FILAB\anaconda3\envs\sumo\Lib\site-packages\sumo\tools\randomTrips.py -n test_folder\test25.net.xml -e 3500 --period 0.5 --fringe-factor 50 -o test_folder\test25.rou.xml

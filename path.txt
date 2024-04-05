@@ -1,1 +1,0 @@
-SUMO_TOOL=C:\Users\FILAB\anaconda3\envs\sumo\Lib\site-packages\sumo\tools

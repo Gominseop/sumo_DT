@@ -151,16 +151,18 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
-files/network/connection/*.con.xml
-files/network/edge/*.edg.xml
-files/network/node/*.nod.xml
-files/network/tllight/*.tll.xml
-files/network/type/*.typ.xml
+model_library/network/connection/*.con.xml
+model_library/network/edge/*.edg.xml
+model_library/network/node/*.nod.xml
+model_library/network/tllogic/*.tll.xml
+model_library/network/type/*.typ.xml
+model_library/network/*.xml
 
-files/route/*.rou.xml
-files/*.netccfg
-files/*.sumocfg
-files/*.settings.xml
+model_library/route/*.rou.xml
+model_library/*.netccfg
+model_library/*.sumocfg
+model_library/*.settings.xml
+
 
 .idea
 .idea/
@@ -176,9 +178,9 @@ utils/route_t
 report/
 place/
 dummy/
-files/
 old/
 video/
+testset/
 test_folder/*.xml
 test_folder/*.*cfg
 test_folder/*.txt
