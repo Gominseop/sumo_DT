@@ -18,16 +18,26 @@ class WindowClass(QtWidgets.QMainWindow):
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
 
+        if 'SUMO_HOME' in os.environ:
+            sys.path.append(os.environ['SUMO_HOME'])
+
         QtCore.QCoreApplication.setOrganizationName("minseop")
 
         self.settings = QtCore.QSettings()
 
         self.dbm = None
-        self.sumogen = SUMOGenerator()
+        self.sumogen = None
         self.nodes = []
         self.output_name = ''
 
+        self.roads = {}
+
         self.ui.button_db.clicked.connect(self.db_connect)
+        self.ui.button_target.clicked.connect(self.data_load)
+        self.ui.button_node.clicked.connect(self.node_generate)
+        self.ui.button_edge.clicked.connect(self.edge_generate)
+        self.ui.button_connection.clicked.connect(self.connection_generate)
+        self.ui.button_tllogic.clicked.connect(self.tllogic_generate)
         self.ui.button_network.clicked.connect(self.network_generate)
         self.ui.button_route.clicked.connect(self.route_generate)
         self.ui.button_sumo.clicked.connect(self.sumocfg_generate)
@@ -42,17 +52,18 @@ class WindowClass(QtWidgets.QMainWindow):
         self.dbm.initialize_db(
             host='141.223.65.208',
             port=3306,
-            user='guest_user',
-            password='postechime',
+            user='root',
+            password='filab1020',
             db='filab_traffic',
             charset='utf8'
         )
         self.ui.output_log.append(f'{datetime.now()} : connect - database')
 
-    def network_generate(self):
+    def data_load(self):
+        self.sumogen = SUMOGenerator()
+
         node_raw = self.ui.input_node_list.toPlainText()
         self.nodes = node_raw.split(' ')
-        self.output_name = self.ui.input_output_name.text()
 
         ics = self.dbm.read_intersection(self.nodes)
         self.ui.output_log.append(f'{datetime.now()} : read - intersections')
@@ -75,41 +86,98 @@ class WindowClass(QtWidgets.QMainWindow):
         for road in roads:
             self.sumogen.add_road_by_edge(road)
 
-        # 경로는 절대 경로로
-        # node 구성
+        leafs, sources, sinks = self.dbm.read_virtual_ic_road(self.nodes)
+        self.ui.output_log.append(f'{datetime.now()} : read - virtual intersections & roads')
+
+        road_ids = []
+        source_ids = []
+        sink_ids = []
+        for road in roads:
+            road_ids.append(road.id)
+        for source in sources:
+            source_ids.append(source.id)
+        for sink in sinks:
+            sink_ids.append(sink.id)
+
+        self.roads["road"] = road_ids
+        self.roads["source"] = source_ids
+        self.roads["sink"] = sink_ids
+
+        self.sumogen.add_leaf_element(leafs, sources, sinks)
+
+        self.ui.output_log.append(f'{datetime.now()} : set - sumo generator')
+
+    def node_generate(self):
+        self.output_name = self.ui.input_output_name.text()
         self.sumogen.generate_node_file(f'{self.output_name}.nod.xml')
         self.ui.output_log.append(f'{datetime.now()} : create - node file - {self.output_name}.nod.xml')
-        # edge 구성
+
+    def edge_generate(self):
+        self.output_name = self.ui.input_output_name.text()
         self.sumogen.generate_edge_file(f'{self.output_name}.edg.xml')
         self.ui.output_log.append(f'{datetime.now()} : create - edge file - {self.output_name}.edg.xml')
-        # connection 구성
+
+    def connection_generate(self):
+        self.output_name = self.ui.input_output_name.text()
         self.sumogen.generate_connection_file(f'{self.output_name}.con.xml')
         self.ui.output_log.append(f'{datetime.now()} : create - connection file - {self.output_name}.con.xml')
-        # tllight 구성
+
+    def tllogic_generate(self):
+        self.output_name = self.ui.input_output_name.text()
         self.sumogen.generate_tll_file(f'{self.output_name}.tll.xml')
         self.ui.output_log.append(f'{datetime.now()} : create - traffic light logic file - {self.output_name}.tll.xml')
 
+    def network_generate(self):
+        self.output_name = self.ui.input_output_name.text()
+        node = self.ui.input_node.text()
+        edge = self.ui.input_edge.text()
+        connection = self.ui.input_connection.text()
+        tllogic = self.ui.input_tllogic.text()
+
         # netccfg 구성
-        self.sumogen.make_netccfg(f'{self.output_name}.netccfg', f'{self.output_name}.net.xml')
-        self.ui.output_log.append(f'{datetime.now()} : create - network config file - {self.output_name}.netccfg')
+        netcfg = self.sumogen.make_netccfg(f'{self.output_name}.netccfg', f'{self.output_name}.net.xml',
+                                           node, edge, connection, tllogic)
+        self.ui.output_log.append(f'{datetime.now()} : create - network config file - netcfg')
         # net 구성
-        self.sumogen.generate_net_file()
-        self.ui.output_log.append(f'{datetime.now()} : create - network file - {self.output_name}.net.xml')
+        network = self.sumogen.generate_net_file()
+        self.ui.output_log.append(f'{datetime.now()} : create - network file - network')
 
     def route_generate(self):
-        begin = self.ui.input_route_begin.text()
-        end = self.ui.input_route_end.text()
-        rand = self.ui.input_route_rand.text()
-        rand = True if rand == 'True' else False
-        seed = self.ui.input_route_seed.text()
-        period = self.ui.input_route_period.text()
-        fringe = self.ui.input_route_fringe.text()
-        self.sumogen.generate_route_file(f'{self.output_name}.net.xml', f'{self.output_name}.rou.xml',
-                                         begin=int(begin), end=int(end), rand=rand, seed=int(seed),
-                                         period=float(period), fringe_factor=float(fringe))
+        self.output_name = self.ui.input_output_name.text()
+
+        base = self.ui.input_route_base.text()
+        step = self.ui.input_route_step.text()
+        front = self.ui.input_route_front.text()
+        back = self.ui.input_route_back.text()
+        repeat = self.ui.input_route_repeat.text()
+
+        base_time = datetime.now()
+        if base != "now":
+            base_time = datetime.strptime(base, '%Y-%m-%d %H:%M:%S')
+
+        if self.roads["road"]:
+            road_traffic = self.dbm.read_road_traffic(self.roads["road"], base_time=base_time, time_step=int(step))
+        else:
+            road_traffic = []
+        source_traffic = self.dbm.read_road_traffic(self.roads["source"], base_time=base_time, time_step=int(step))
+        sink_traffic = self.dbm.read_road_traffic(self.roads["sink"], base_time=base_time, time_step=int(step))
+        self.ui.output_log.append(f'{datetime.now()} : read - traffic flow')
+
+        self.sumogen.set_road_traffic(road_traffic, 'between')
+        self.sumogen.set_road_traffic(source_traffic, 'source')
+        self.sumogen.set_road_traffic(sink_traffic, 'sink')
+        self.ui.output_log.append(f'{datetime.now()} : set - traffic flow')
+
+        self.sumogen.generate_route_file(f'{self.output_name}_route.rou.xml', f'{self.output_name}_flow.rou.xml',
+                                         f'{self.output_name}_detector.xml', f'{self.output_name}_traffic.txt',
+                                         front_buffer=int(front), back_buffer=int(back), interval=3600, repeat=int(repeat))
+
         self.ui.output_log.append(f'{datetime.now()} : create - route file - {self.output_name}.rou.xml')
 
     def sumocfg_generate(self):
+        network = self.ui.input_network.text()
+        rou = self.ui.input_route.text()
+
         summary = self.ui.input_sumo_summary.text()
         summary = f'{self.output_name}_summary.xml' if summary == 'True' else ''
         summary_period = self.ui.input_sumo_summary_period.text()
@@ -117,16 +185,15 @@ class WindowClass(QtWidgets.QMainWindow):
         queue = f'{self.output_name}_queue.xml' if queue == 'True' else ''
         queue_period = self.ui.input_sumo_queue_period.text()
         edge = self.ui.input_sumo_edge.text()
-        edge = f'{self.output_name}_edge.xml' if edge == 'True' else ''
-        lane = self.ui.input_sumo_lane.text()
-        lane = f'{self.output_name}_lane.xml' if lane == 'True' else ''
+        edge = f'{self.output_name}.add.xml' if edge == 'True' else ''
+        edge_period = self.ui.input_sumo_edge_period.text()
         begin = self.ui.input_sumo_begin.text()
         end = self.ui.input_sumo_end.text()
-        self.sumogen.make_sumocfg(f'{self.output_name}.sumocfg', int(begin), int(end),
+        self.sumogen.make_sumocfg(f'{self.output_name}.sumocfg', int(begin), int(end)+1, network=network, route=rou,
                                   route_path=f'{self.output_name}.rou.xml',
                                   summary_path=summary, summary_period=summary_period,
                                   queue_path=queue, queue_period=queue_period,
-                                  edge_path=edge, lane_path=lane)
+                                  edge_path=edge, edge_period=edge_period)
         self.ui.output_log.append(f'{datetime.now()} : create - sumocfg file - {self.output_name}.sumocfg')
 
     def sumo_run(self):

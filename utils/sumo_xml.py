@@ -234,7 +234,7 @@ class SUMOGenerator:
         # intersection 까지 넣어서 완전한 통일성을 할지는 고려 필요 (실재로 사용하지는 않음)
 
     def generate_route_file(self, route_path, flow_path, detector_path=None, traffic_path=None, interval=60, repeat=1,
-                            param=True, insert_method="best", insert_speed="max"):
+                            front_buffer=1, back_buffer=1, param=True, insert_method="best", insert_speed="max"):
 
         if detector_path is None:
             dpath = self.file_paths["detector"]
@@ -243,11 +243,15 @@ class SUMOGenerator:
         if traffic_path is None:
             tpath = self.file_paths["traffic"]
         else:
-            tpath = self.generate_flow_file(traffic_path)
+            tpath = self.generate_flow_file(traffic_path, front_buffer, back_buffer)
 
+        # sumo home이 없어서 안되는듯
         router_path = os.environ['SUMO_HOME'] + '/tools/detector/flowrouter.py'
+
+        # router_path = 'C:\Program Files (x86)\Eclipse\Sumo\\tools\detector\\flowrouter.py'
+
         commend = (f'python "{router_path}" -o {route_path} -e {flow_path} -d {dpath} -f {tpath} '
-                   f'-n {self.file_paths["network"]} -i {interval}')
+                   f'-n {self.file_paths["network"]} -i {interval/60}')
         if param:
             commend += f'''
              --params="departLane="\\"best\\"" departSpeed="\\"max\\"""
@@ -279,24 +283,61 @@ class SUMOGenerator:
         self.file_paths["detector"] = detector_path
         return detector_path
 
-    def generate_flow_file(self, traffic_path):
+    def generate_flow_file(self, traffic_path, front_buffer, back_buffer):
         with open(traffic_path, "w") as tra:
             tra.write("Detector;Time;qPKW;vPKW\n")
             for rid, r in self.road.items():
                 ct = 0
+                fb = front_buffer
+                tmp_a = None
                 for a in r.traffic:
+                    tmp_a = a
+                    while fb > 0:
+                        tra.write(f'detector_{rid};{ct};{a.volume};{int(a.speed)}\n')
+                        ct += a.interval/60
+                        fb -= 1
                     tra.write(f'detector_{rid};{ct};{a.volume};{int(a.speed)}\n')
-                    ct += a.interval
+                    ct += a.interval/60
+                bb = back_buffer
+                while bb > 0 and tmp_a is not None:
+                    tra.write(f'detector_{rid};{ct};{tmp_a.volume};{int(tmp_a.speed)}\n')
+                    ct += tmp_a.interval/60
+                    bb -= 1
             for sid, s in self.leaf_road["source"].items():
                 ct = 0
+                fb = front_buffer
+                tmp_b = None
                 for b in s.traffic:
+                    tmp_b = b
+                    while fb > 0:
+                        tra.write(f'detector_{sid};{ct};{b.volume};{int(b.speed)}\n')
+                        ct += b.interval/60
+                        fb -= 1
                     tra.write(f'detector_{sid};{ct};{b.volume};{int(b.speed)}\n')
-                    ct += b.interval
+                    ct += b.interval/60
+                bb = back_buffer
+                while bb > 0 and tmp_b is not None:
+                    tra.write(f'detector_{sid};{ct};{tmp_b.volume};{int(tmp_b.speed)}\n')
+                    ct += tmp_b.interval/60
+                    bb -= 1
             for kid, k in self.leaf_road["sink"].items():
                 ct = 0
+                fb = front_buffer
+                tmp_c = None
                 for c in k.traffic:
+                    tmp_c = c
+                    while fb > 0:
+                        tra.write(f'detector_{kid};{ct};{c.volume};{int(c.speed)}\n')
+                        ct += c.interval/60
+                        fb -= 1
                     tra.write(f'detector_{kid};{ct};{c.volume};{int(c.speed)}\n')
-                    ct += c.interval
+                    ct += c.interval/60
+                bb = back_buffer
+                while bb > 0 and tmp_c is not None:
+                    tra.write(f'detector_{kid};{ct};{tmp_c.volume};{int(tmp_c.speed)}\n')
+                    ct += tmp_c.interval/60
+                    bb -= 1
+
         self.file_paths["traffic"] = traffic_path
         return traffic_path
 
@@ -352,7 +393,11 @@ class SUMOGenerator:
                     total_s_route = [0 for a in range(s_num)]
                     for i in range(s_num):
                         # 우회전에서 오는 경로가 2개일 수는 없음 방해할 수 밖에 없기 때문
-                        s_count.append(right[rsl[1][i]][0][1] if len(right[rsl[1][i]]) else 0)
+                        r_n = 0
+                        if right[rsl[1][i]]:
+                            r_n += right[rsl[1][i]][0][1]
+
+                        s_count.append(r_n)
                         s_to = rsl[1][i]
                         for s_from, from_num in straight[rsl[1][i]]:
                             # 여러 side에서 직진으로 올 경우에 대한 처리 (전체 직진 수)
@@ -362,12 +407,13 @@ class SUMOGenerator:
                             # 오는 방향 우선 순위 (sid + shape - from id) % shape 작은 쪽이 오른쪽에 할당됨
                             cv1 = (int(s_to) + ic.shape - int(s_from)) % ic.shape
                             cv2 = (int(s_to) + ic.shape - int(sid)) % ic.shape
-                            if cv1 < cv2:
+                            if cv1 > cv2:
                                 s_count[i] = s_count[i] + from_num
 
                         # 직진해야 하는 수 + 우회전에서 오는 수(s_count)가 exitLaneNum보다 크다면, 우회전을 공유
-                        if rsl[1] != '-1' and total_s_route[i] + s_count[i] > ic.sides[rsl[1][i]].exitLaneNum:
-                            s_count[i] = s_count[i] - (total_s_route[i] + s_count[i] - ic.sides[rsl[1][i]].exitLaneNum)
+                        if rsl[1] != '-1' and total_s_route[i] + r_n > ic.sides[rsl[1][i]].exitLaneNum:
+                            s_count[i] = s_count[i] - (total_s_route[i] + r_n - ic.sides[rsl[1][i]].exitLaneNum)
+                        # 해도 0 미만이면 땅겨야지 그만큼 그래도 안되면 설계가 잘못된것
 
                     # 좌회전은 여러 side에서 하나의 side로 할 수도 있기 때문
                     # l_count = ic.sides[rsl[2]].exitLaneNum-1 - (우선 순위 높은 side의 좌회전 수)
@@ -383,10 +429,23 @@ class SUMOGenerator:
                             # 오는 방향 우선 순위 (sid + shape - from id) % shape 큰 쪽이 왼쪽에 할당됨
                             cv1 = (int(l_to) + ic.shape - int(l_from)) % ic.shape
                             cv2 = (int(l_to) + ic.shape - int(sid)) % ic.shape
-                            if cv1 > cv2:
+                            if cv1 < cv2:
                                 l_count[i] = l_count[i] - from_num
-                        if l_count[i] - side.route.count(f'L{i}') + 1 < 0:
-                            l_count[i] = side.route.count(f'L{i}') - 1
+                        check = l_count[i] - side.route.count(f'L{i}') + 1
+
+                        r_n = 0
+                        if right[rsl[2][i]]:
+                            r_n += right[rsl[2][i]][0][1]
+                        if check < r_n:
+                            # l_count[i] = side.route.count(f'L{i}') - 1
+                            if r_n + side.route.count(f'L{i}') <= ic.sides[rsl[2][i]].exitLaneNum:
+                                l_count[i] = r_n
+                            elif check < 0:
+                                l_count[i] = 0
+                            else:
+                                l_count[i] = check
+                        else:
+                            l_count[i] = check
 
                     # sid에서 나가는 우회전 경로가 다수일 경우 처리
                     r_count = {i: 0 for i in range(len(rsl[0]))}
@@ -413,7 +472,7 @@ class SUMOGenerator:
                             elif r == 'L':
                                 conn.write(f'   <connection from="{icid}_{sid}_i" to="{icid}_{rsl[rdic[r]][int(idx)]}_o" '
                                            f'fromLane="{i}" toLane="{rsl_num[sid]["l"][int(idx)]}"/>\n')
-                                rsl_num[sid]["l"][int(idx)] -= 1
+                                rsl_num[sid]["l"][int(idx)] += 1
                             elif r == 'U':
                                 # conn.write(f'   <connection from="{icid}_{sid}i" to="{icid}_{rsl[rdic[r]]}o" '
                                 #            f'fromLane="{i}" toLane="0"/>\n')
@@ -620,16 +679,28 @@ class SUMOGenerator:
 
     def generate_net_file(self):
         result = subprocess.call(f'netconvert {self.file_paths["netccfg"]}')
-        return self.file_paths["netccfg"]
+        return self.file_paths["network"]
 
-    def make_netccfg(self, netccfg_path, network_path):
+    def make_netccfg(self, netccfg_path, network_path, node="", edge="", connection="", tllogic=""):
         with open(netccfg_path, "w") as net:
             net.write(f'<configuration>\n')
             net.write(f'   <input>\n')
-            net.write(f'      <node-files value="{self.file_paths["node"]}"/>\n')
-            net.write(f'      <edge-files value="{self.file_paths["edge"]}"/>\n')
-            net.write(f'      <connection-files value="{self.file_paths["connection"]}"/>\n')
-            net.write(f'      <tllogic-files value="{self.file_paths["tllogic"]}"/>\n')
+            if node == "":
+                net.write(f'      <node-files value="{self.file_paths["node"]}"/>\n')
+            else:
+                net.write(f'      <node-files value="{node}.nod.xml"/>\n')
+            if edge == "":
+                net.write(f'      <edge-files value="{self.file_paths["edge"]}"/>\n')
+            else:
+                net.write(f'      <edge-files value="{edge}.edg.xml"/>\n')
+            if connection == "":
+                net.write(f'      <connection-files value="{self.file_paths["connection"]}"/>\n')
+            else:
+                net.write(f'      <connection-files value="{connection}.con.xml"/>\n')
+            if tllogic == "":
+                net.write(f'      <tllogic-files value="{self.file_paths["tllogic"]}"/>\n')
+            else:
+                net.write(f'      <tllogic-files value="{tllogic}.tll.xml"/>\n')
             net.write(f'   </input>\n\n')
             net.write(f'   <output>\n')
             net.write(f'      <output-file value="{network_path}"/>\n')
@@ -644,15 +715,28 @@ class SUMOGenerator:
 
     def make_sumocfg(self, sumocfg_path, time_begin, time_end,
                      summary_path='', summary_period=100, queue_path='', queue_period=100,
-                     edge_path='', lane_path='', **file_paths):
+                     edge_path='', edge_period=100, network="", route="", **file_paths):
         with open(sumocfg_path, "w") as net:
             net.write(f'<configuration>\n')
             net.write(f'   <input>\n')
-            net.write(f'      <net-file value="{self.file_paths["network"]}"/>\n')
+            if network == "":
+                net.write(f'      <net-file value="{self.file_paths["network"]}"/>\n')
+            else:
+                net.write(f'      <net-file value="{network}.net.xml"/>\n')
             # if route_path != '':
             #     net.write(f'      <route-files value="{route_path}"/>\n')
 
-            add_file = f'{self.file_paths["route"]}, {self.file_paths["flow"]}'
+            if route == "":
+                add_file = f'{self.file_paths["route"]}, {self.file_paths["flow"]}'
+            else:
+                add_file = f'{route}_route.rou.xml, {route}_flow.rou.xml'
+
+            if edge_path != '':
+                with open(edge_path, "w") as ef:
+                    ef.write('<additional>\n')
+                    ef.write(f'   <edgeData id="traffic_on_edge" file="{edge_path.split("/")[-1].split(".")[0]+"_edge.xml"}" period="{edge_period}"/>\n')
+                    ef.write('</additional>')
+                add_file += f', {edge_path}'
             if 'addition' in self.file_paths:
                 add_file += f', {self.file_paths["addition"]}'
             net.write(f'      <additional-files value="{add_file}"/>\n')
@@ -673,10 +757,10 @@ class SUMOGenerator:
             if queue_path != '':
                 net.write(f'''      <queue-output value="{queue_path}"/>\n''')
                 net.write(f'''      <queue-output.period value="{queue_period}"/>\n''')
-            if edge_path != '':
-                net.write(f'''      <edgedata-output value="{edge_path}"/>\n''')
-            if lane_path != '':
-                net.write(f'''      <lanedata-output value="{lane_path}"/>\n''')
+            # if edge_path != '':
+            #     net.write(f'''      <edgedata-output value="{edge_path}"/>\n''')
+            # if lane_path != '':
+            #     net.write(f'''      <lanedata-output value="{lane_path}"/>\n''')
             net.write(f'   </output>\n')
             net.write(f'   <time>\n')
             net.write(f'      <begin value="{time_begin}"/>\n')
@@ -803,5 +887,5 @@ if __name__=="__main__":
     # sumocfg 구성
     # sumogen.make_sumocfg(f'{test_file}.sumocfg', 0, 10000)
     sumogen.make_sumocfg(f'{test_file}.sumocfg', 0, 5000,
-                         summary_path=f'{test_file}_summary.xml', edge_path=f'{test_file}_edge.xml')
+                         summary_path=f'{test_file}_summary.xml', edge_path=f'{test_file}.add.xml')
     print('finish')

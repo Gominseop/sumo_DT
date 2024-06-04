@@ -374,15 +374,20 @@ class DBManager(DBClient):
             re = self.read_query(f'SELECT * FROM intersection WHERE id in {tuple(id_tuple)}')
 
         leafs = []
+        leaf_name = []
         for r in re:
             icnode = ICNode(r[0], r[2], r[3], r[5], r[1], r[4], r[6])
             icnode.category = "virtual"
-            sides = self.read_query(f"SELECT * FROM intersection_side WHERE ic_id = '{icnode.id}' AND side_id in {tuple(leaf_ids[icnode.id])}")
+            if len(leaf_ids[icnode.id]) == 1:
+                sides = self.read_query(f"SELECT * FROM intersection_side WHERE ic_id = '{icnode.id}' AND side_id in ('{leaf_ids[icnode.id][0]}')")
+            else:
+                sides = self.read_query(f"SELECT * FROM intersection_side WHERE ic_id = '{icnode.id}' AND side_id in {tuple(leaf_ids[icnode.id])}")
             for s in sides:
                 icnode.add_side_info(SideNode(s[1], s[2], s[3], s[4], s[5], s[6], s[7], s[8], s[9]))
             icnode.shape = len(sides)
             leafs.append(icnode)
-        print(f'intersection - leaf intersection node {icid}와 그 side 읽어오기 성공')
+            leaf_name.append(r[0])
+        print(f'intersection - leaf intersection node {leaf_name}와 그 side 읽어오기 성공')
 
         return leafs, sources, sinks
 
@@ -399,16 +404,32 @@ class DBManager(DBClient):
         else:
             ttime = base_time
 
+        road_traffic = {}
+        for ri in rid:
+            re = self.read_query(
+                f'SELECT * FROM traffic WHERE `datetime` <= "{ttime.strftime("%Y-%m-%d %H:%M:%S")}" '
+                f'AND `road_id` = "{ri}" ORDER BY `datetime` DESC limit {time_step}')
+
+            b = f'SELECT * FROM traffic WHERE `datetime` <= "{ttime.strftime("%Y-%m-%d %H:%M:%S")}" AND `road_id` = "{ri}" ORDER BY `datetime` DESC limit {time_step}'
+
+            for i in range(len(re)-1, -1, -1):
+                r = re[i]
+                if r[1] in road_traffic:
+                    road_traffic[r[1]].append(Traffic(r[0], r[2], r[3], r[4], r[5]))
+                else:
+                    road_traffic[r[1]] = [Traffic(r[0], r[2], r[3], r[4], r[5])]
+
+        """
         # 그냥 time step 만큼만 traffic에 저장하는걸로, 이후에는 history로 이동
         if type(rid) == tuple or type(rid) == list:
             if len(rid) == 1:
                 re = self.read_query(
                     f'SELECT * FROM traffic WHERE `datetime` <= "{ttime.strftime("%Y-%m-%d %H:%M:%S")}" '
-                    f'AND `road_id` = "{rid[0]}" ORDER BY `datetime` ASC')
+                    f'AND `road_id` = "{rid[0]}" ORDER BY `datetime` DESC limit {time_step}')
             else:
                 re = self.read_query(
                     f'SELECT * FROM traffic WHERE `datetime` <= "{ttime.strftime("%Y-%m-%d %H:%M:%S")}" '
-                    f'AND `road_id` IN {tuple(rid)} ORDER BY `datetime` ASC')
+                    f'AND `road_id` IN {tuple(rid)} ORDER BY `datetime` DESC limit {time_step*len(rid)}')
         else:
             raise TypeError('type of id must be tuple:str or tuple:str')
 
@@ -418,6 +439,7 @@ class DBManager(DBClient):
                 road_traffic[r[1]].append(Traffic(r[0], r[2], r[3], r[4], r[5]))
             else:
                 road_traffic[r[1]] = [Traffic(r[0], r[2], r[3], r[4], r[5])]
+        """
         return road_traffic
 
     @check_db_setting

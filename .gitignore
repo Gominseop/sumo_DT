@@ -185,3 +185,12 @@ test_folder/*.xml
 test_folder/*.*cfg
 test_folder/*.txt
 test_folder/*.json
+test_folder/*.csv
+test_folder/*.xlsx
+test_folder/result_*/
+
+model_library
+
+utils/*.csv
+utils/*.CSV
+utils/*.xlsx
