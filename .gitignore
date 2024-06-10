@@ -188,8 +188,7 @@ test_folder/*.json
 test_folder/*.csv
 test_folder/*.xlsx
 test_folder/result_*/
-
-model_library
+!test_folder/volume_answer.csv
 
 utils/*.csv
 utils/*.CSV
