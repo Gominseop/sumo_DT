@@ -193,3 +193,4 @@ test_folder/result_*/
 utils/*.csv
 utils/*.CSV
 utils/*.xlsx
+!utils/speed_answer_with_ratio.csv
