@@ -797,7 +797,7 @@ class SUMOGenerator:
 if __name__=="__main__":
     # db 연결
     dbm = DBManager()
-    dbm.initialize_db('localhost', 3306, 'root', 'filab1020', 'filab_traffic', 'utf8')
+    dbm.initialize_db('localhost', 3306, 'user', 'password', 'database', 'utf8')
 
     # 정보 불러오기
     # icids = ['3500007700']
