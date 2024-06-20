@@ -12,7 +12,7 @@ dbm.initialize_db(
     '127.0.0.1',
     3306,
     'root',
-    'filab1020',
+    'password',
     'filab_traffic',
     'utf8'
 )

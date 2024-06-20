@@ -23,7 +23,7 @@ def real_mirroring(step, red, stime):
     ptime = datetime(2024, 3, 11, 9, 5, 0) + timedelta(seconds=10)
 
     dbm = DBManager()
-    dbm.initialize_db('localhost', 3306, 'root', 'filab1020', 'filab_traffic', 'utf8')
+    dbm.initialize_db('localhost', 3306, 'root', 'password', 'filab_traffic', 'utf8')
 
     tllist = traci.trafficlight.getIDList()  # --> 적색
     db_tls_list = dbm.read_tllight(tllist)

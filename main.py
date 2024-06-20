@@ -50,10 +50,10 @@ class WindowClass(QtWidgets.QMainWindow):
     def db_connect(self):
         self.dbm = DBManager()
         self.dbm.initialize_db(
-            host='141.223.65.208',
+            host='localhost',
             port=3306,
             user='root',
-            password='filab1020',
+            password='password',
             db='filab_traffic',
             charset='utf8'
         )
